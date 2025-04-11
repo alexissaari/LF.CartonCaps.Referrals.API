@@ -16,6 +16,15 @@ namespace LF.CartonCaps.Referrals.API.Controllers
         }
 
         [HttpGet(Name = MyRoutes.GetMyReferrals)]
-        public ActionResult<List<string>> GetMyFriends() => ReferralsService.GetMyReferrals();
+        public ActionResult<List<Referral>> GetMyReferrals()
+        {
+            var referrals = ReferralsService.GetMyReferrals();
+            if (referrals == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(referrals);
+        }
     }
 }
