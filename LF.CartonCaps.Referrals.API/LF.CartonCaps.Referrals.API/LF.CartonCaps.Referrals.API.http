@@ -1,0 +1,5 @@
+﻿@LF.CartonCaps.Referrals.API_HostAddress = http://localhost:5244
+
+GET {{LF.CartonCaps.Referrals.API_HostAddress}}/referrals
+
+###

@@ -1,3 +1,5 @@
+using LF.CartonCaps.Referrals.API.Models;
+using LF.CartonCaps.Referrals.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LF.CartonCaps.Referrals.API.Controllers
@@ -13,10 +15,7 @@ namespace LF.CartonCaps.Referrals.API.Controllers
             _logger = logger;
         }
 
-        [HttpGet(Name = "GetMyReferrals")]
-        public string Get()
-        {
-            return "placeholder";
-        }
+        [HttpGet(Name = MyRoutes.GetMyReferrals)]
+        public ActionResult<List<string>> GetMyFriends() => ReferralsService.GetMyReferrals();
     }
 }
