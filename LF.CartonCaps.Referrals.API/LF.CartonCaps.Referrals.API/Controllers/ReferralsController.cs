@@ -8,23 +8,29 @@ namespace LF.CartonCaps.Referrals.API.Controllers
     [Route("[controller]")]
     public class ReferralsController : ControllerBase
     {
-        private readonly ILogger<ReferralsController> _logger;
+        private readonly ILogger<ReferralsController> logger;
+        private readonly ReferralsService referralsService;
 
         public ReferralsController(ILogger<ReferralsController> logger)
         {
-            _logger = logger;
+            this.logger = logger;
+            this.referralsService = new ReferralsService();
         }
 
-        [HttpGet(Name = MyRoutes.GetMyReferrals)]
-        public ActionResult<List<Referral>> GetMyReferrals()
+        [HttpGet]
+        [Route("{userId}")]
+        public ActionResult<List<Referral>> GetReferrals(int userId)
         {
-            var referrals = ReferralsService.GetMyReferrals();
-            if (referrals == null)
-            {
-                return NotFound();
-            }
+            return Ok(this.referralsService.GetReferrals(userId));
+        }
 
-            return Ok(referrals);
+        [HttpPatch]
+        [Route("{userId}/{referralId}/{referralStatus}")]
+        public ActionResult PatchReferral(int userId, int referralId, ReferralStatus referralStatus)
+        {
+            this.referralsService.PatchReferral(userId, referralId, referralStatus);
+
+            return Ok();
         }
     }
 }
