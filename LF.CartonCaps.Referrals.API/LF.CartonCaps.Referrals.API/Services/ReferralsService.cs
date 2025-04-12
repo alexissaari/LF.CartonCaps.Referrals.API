@@ -1,22 +1,13 @@
 ﻿using LF.CartonCaps.Referrals.API.Models;
+using LF.CartonCaps.Referrals.API.Proxies;
 
 namespace LF.CartonCaps.Referrals.API.Services
 {
-    // Services are where we handle our business logic.
-    // The logic done here is the same regardless of what data we're preforming logic rules on,
-    // so let's make this static, because we don't need multiple instances of it.
-    public static class ReferralsService
+    public class ReferralsService
     {
-        static List<Referral> MyReferrals { get; }
+        public IList<Referral>? GetReferrals(int userId) => MochDatabaseProxy.GetReferrals(userId);
 
-        static ReferralsService()
-        {
-            MyReferrals = [
-                new Referral(){ FirstName = "Alexis", LastName = "Saari", ReferralStatus = ReferralStatus.Complete },
-                new Referral(){ FirstName = "Jane", LastName = "Doe", ReferralStatus = ReferralStatus.Sent }
-                ];
-        }
-
-        public static List<Referral> GetMyReferrals() => MyReferrals;
+        public void PatchReferral(int userId, int referralId, ReferralStatus referralStatus) 
+            => MochDatabaseProxy.PatchReferral(userId, referralId, referralStatus);
     }
 }
