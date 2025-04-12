@@ -13,22 +13,22 @@ namespace LF.CartonCaps.Referrals.API.Proxies
      */
     public static class MochDatabaseProxy
     {
-        private static Dictionary<int, User> Users;
+        private static Dictionary<string, User> Users;
 
         static MochDatabaseProxy()
         {
-            Users = new Dictionary<int, User>();
+            Users = new Dictionary<string, User>();
             populateMochDatasource();
         }
 
-        public static IList<Referral>? GetReferrals(int userId)
+        public static IList<Referral>? GetReferrals(string userId)
         {
             var user = GetUser(userId);
 
             return user.Referrals;
         }
 
-        public static void PatchReferral(int userId, int referralId, ReferralStatus referralStatus)
+        public static void PatchReferral(string userId, string referralId, ReferralStatus referralStatus)
         {
             var user = GetUser(userId);
             var referral = GetReferral(user, referralId);
@@ -36,7 +36,7 @@ namespace LF.CartonCaps.Referrals.API.Proxies
             referral.ReferralStatus = referralStatus;
         }
 
-        private static User GetUser(int userId)
+        private static User GetUser(string userId)
         {
             Users.TryGetValue(userId, out User? user);
 
@@ -50,9 +50,9 @@ namespace LF.CartonCaps.Referrals.API.Proxies
             return user;
         }
 
-        private static Referral GetReferral(User user, int referralId)
+        private static Referral GetReferral(User user, string referralId)
         {
-            var referral = user?.Referrals?.FirstOrDefault(x => x.ReferralId == referralId);
+            var referral = user?.Referrals?.FirstOrDefault(x => x.ReferralId.Equals(referralId));
 
             if (referral == null)
             {
@@ -67,11 +67,11 @@ namespace LF.CartonCaps.Referrals.API.Proxies
 
         private static void populateMochDatasource()
         {
-            Users.Add(1111, new User() { UserId = 1111, FirstName = "First", LastName = "User1", });
-            Users.Add(2222, new User() { UserId = 2222, FirstName = "Second", LastName = "User2" });
-            Users.Add(3333, new User() { UserId = 3333, FirstName = "Third", LastName = "User3", 
+            Users.Add("1111", new User() { UserId = "1111", FirstName = "First", LastName = "User1", });
+            Users.Add("2222", new User() { UserId = "2222", FirstName = "Second", LastName = "User2" });
+            Users.Add("3333", new User() { UserId = "3333", FirstName = "Third", LastName = "User3", 
                 Referrals = [ new Referral() { 
-                    ReferralId = 123, 
+                    ReferralId = "123", 
                     FirstName = "Alexis", 
                     LastName = "Saari", 
                     ReferralStatus = ReferralStatus.Sent

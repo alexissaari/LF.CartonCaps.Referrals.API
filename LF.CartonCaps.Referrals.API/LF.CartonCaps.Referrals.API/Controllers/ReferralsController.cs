@@ -19,14 +19,14 @@ namespace LF.CartonCaps.Referrals.API.Controllers
 
         [HttpGet]
         [Route("{userId}")]
-        public ActionResult<List<Referral>> GetReferrals(int userId)
+        public ActionResult<List<Referral>> GetReferrals(string userId)
         {
             return Ok(this.referralsService.GetReferrals(userId));
         }
 
         [HttpPatch]
         [Route("{userId}/{referralId}/{referralStatus}")]
-        public ActionResult PatchReferral(int userId, int referralId, ReferralStatus referralStatus)
+        public ActionResult PatchReferral(string userId, string referralId, ReferralStatus referralStatus)
         {
             this.referralsService.PatchReferral(userId, referralId, referralStatus);
 
