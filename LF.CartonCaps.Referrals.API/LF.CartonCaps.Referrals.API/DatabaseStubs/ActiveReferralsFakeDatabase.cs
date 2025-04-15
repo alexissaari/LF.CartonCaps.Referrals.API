@@ -1,15 +1,15 @@
-﻿using LF.CartonCaps.Referrals.API.Models;
-using LF.CartonCaps.Referrals.API.Models.Abstractions;
+﻿using System.Collections.Concurrent;
+using LF.CartonCaps.Referrals.API.Models;
 
 namespace LF.CartonCaps.Referrals.API.Proxies
 {
-    public static class ActiveReferralsDatabaseProxy
+    public static class ActiveReferralsFakeDatabase
     {
-        private static Dictionary<string, ActiveReferral> activeReferees;
-
-        static ActiveReferralsDatabaseProxy()
+        private static ConcurrentDictionary<string, ActiveReferral> activeReferees;
+        
+        static ActiveReferralsFakeDatabase()
         {
-            activeReferees = new Dictionary<string, ActiveReferral>();
+            activeReferees = new ConcurrentDictionary<string, ActiveReferral>();
         }
 
         public static ActiveReferral? GetActiveReferral(string referralId)
@@ -41,7 +41,7 @@ namespace LF.CartonCaps.Referrals.API.Proxies
 
         public static void RemoveActiveReferral(string referralId)
         {
-            activeReferees.Remove(referralId);
+            activeReferees.Remove(referralId, out ActiveReferral activeReferral);
         }
     }
 }

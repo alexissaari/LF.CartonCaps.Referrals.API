@@ -7,11 +7,11 @@ namespace LF.CartonCaps.Referrals.API.Services
 {
     public class ReferralsService : IReferralsService
     {
-        public IList<Referral>? GetReferrals(string userId) => UsersDatabaseProxy.GetReferrals(userId);
+        public IList<Referral>? GetReferrals(string userId) => UsersFakeDatabase.GetReferrals(userId);
 
         public void UpdateReferralStatus(string referralId, ReferralStatus referralStatus)
         {
-            var activeReferral = ActiveReferralsDatabaseProxy.GetActiveReferral(referralId);
+            var activeReferral = ActiveReferralsFakeDatabase.GetActiveReferral(referralId);
             if (activeReferral == null)
             {
                 throw new ReferralDoesNotExistException($"Referral Not Found. ReferralId = {referralId}.", referralId);
@@ -20,20 +20,20 @@ namespace LF.CartonCaps.Referrals.API.Services
             // Update our internal store of active referees
             if (referralStatus == ReferralStatus.Complete)
             {
-                ActiveReferralsDatabaseProxy.RemoveActiveReferral(referralId);
+                ActiveReferralsFakeDatabase.RemoveActiveReferral(referralId);
             }
             else
             {
-                ActiveReferralsDatabaseProxy.UpdateActiveReferral(referralId, referralStatus);
+                ActiveReferralsFakeDatabase.UpdateActiveReferral(referralId, referralStatus);
             }
 
             // Update the user who referred this person
-            UsersDatabaseProxy.UpdateReferralStatus(activeReferral.OriginatingReferralUserId, referralId, referralStatus);
+            UsersFakeDatabase.UpdateReferralStatus(activeReferral.OriginatingReferralUserId, referralId, referralStatus);
         }
 
         public string InviteFriend(string userId, string firstName, string lastName)
         {
-            var referral = UsersDatabaseProxy.GetReferral(userId, firstName, lastName);
+            var referral = UsersFakeDatabase.GetReferral(userId, firstName, lastName);
 
             // We have already referred this friend
             if (referral != null)
@@ -52,7 +52,7 @@ namespace LF.CartonCaps.Referrals.API.Services
             };
 
             // Add this friend to our user's list of referees
-            UsersDatabaseProxy.AddReferee(userId, newReferee);
+            UsersFakeDatabase.AddReferee(userId, newReferee);
 
             // Add this referee to our collection of active referees
             var activeReferral = new ActiveReferral()
@@ -60,7 +60,7 @@ namespace LF.CartonCaps.Referrals.API.Services
                 ReferralStatus = ReferralStatus.Sent,
                 OriginatingReferralUserId = userId
             };
-            ActiveReferralsDatabaseProxy.AddActiveReferral(newReferee.RefereeId, userId);
+            ActiveReferralsFakeDatabase.AddActiveReferral(newReferee.RefereeId, userId);
 
             return newReferee.RefereeId;
         }

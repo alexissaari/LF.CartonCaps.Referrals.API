@@ -1,4 +1,5 @@
-﻿using LF.CartonCaps.Referrals.API.Models;
+﻿using System.Collections.Concurrent;
+using LF.CartonCaps.Referrals.API.Models;
 using LF.CartonCaps.Referrals.API.Models.Exceptions;
 
 namespace LF.CartonCaps.Referrals.API.Proxies
@@ -13,16 +14,15 @@ namespace LF.CartonCaps.Referrals.API.Proxies
      * Since this service is responsible for creating and supporting referees, 
      * let's store all our active referees in a seperate datastore, for easy lookup.
      */
-    public static class UsersDatabaseProxy
+    public static class UsersFakeDatabase
     {
-        private static Dictionary<string, User> users;
+        private static ConcurrentDictionary<string, User> users;
 
-        static UsersDatabaseProxy()
+        static UsersFakeDatabase()
         {
-            users = new Dictionary<string, User>();
+            users = new ConcurrentDictionary<string, User>();
             PopulateDatastore();
         }
-
 
         public static IList<Referral>? GetReferrals(string userId)
         {
@@ -69,9 +69,9 @@ namespace LF.CartonCaps.Referrals.API.Proxies
 
         private static void PopulateDatastore()
         {
-            users.Add("1111", new User() { UserId = "1111", FirstName = "First", LastName = "User1", ShareableReferralCode = "ABC123" });
-            users.Add("2222", new User() { UserId = "2222", FirstName = "Second", LastName = "User2", ShareableReferralCode = "XYZ789" });
-            users.Add("3333", new User() { UserId = "3333", FirstName = "Third", LastName = "User3", ShareableReferralCode = "LMN555",
+            users.TryAdd("1111", new User() { UserId = "1111", FirstName = "First", LastName = "User1", ShareableReferralCode = "ABC123" });
+            users.TryAdd("2222", new User() { UserId = "2222", FirstName = "Second", LastName = "User2", ShareableReferralCode = "XYZ789" });
+            users.TryAdd("3333", new User() { UserId = "3333", FirstName = "Third", LastName = "User3", ShareableReferralCode = "LMN555",
                 Referrals = [ new Referral() { 
                     RefereeId = "1234", 
                     FirstName = "Alexis", 
