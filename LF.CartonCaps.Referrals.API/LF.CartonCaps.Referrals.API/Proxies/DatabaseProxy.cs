@@ -1,8 +1,5 @@
-﻿using System.Collections;
-using System.Numerics;
-using LF.CartonCaps.Referrals.API.Models;
+﻿using LF.CartonCaps.Referrals.API.Models;
 using LF.CartonCaps.Referrals.API.Models.Exceptions;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 
 namespace LF.CartonCaps.Referrals.API.Proxies
 {
@@ -16,25 +13,25 @@ namespace LF.CartonCaps.Referrals.API.Proxies
      * Since this service is responsible for creating and supporting referees, 
      * let's store all our active referees in a seperate datastore, for easy lookup.
      */
-    public static class DatabaseProxy
+    public class DatabaseProxy
     {
-        private static Dictionary<string, User> users;
-        private static Dictionary<string, ReferralStatus> activeReferees;
+        private Dictionary<string, User> users;
+        private Dictionary<string, ReferralStatus> activeReferees;
 
-        static DatabaseProxy()
+        public DatabaseProxy()
         {
-            users = new Dictionary<string, User>();
-            activeReferees = new Dictionary<string, ReferralStatus>();
+            this.users = new Dictionary<string, User>();
+            this.activeReferees = new Dictionary<string, ReferralStatus>();
             PopulateDatastore();
         }
 
-        public static IList<Referral>? GetReferrals(string userId)
+        public IList<Referral>? GetReferrals(string userId)
         {
             var user = GetUser(userId);
             return user.Referrals;
         }
 
-        public static void UpdateReferralStatus(string userId, string referralId, ReferralStatus newReferralStatus)
+        public void UpdateReferralStatus(string userId, string referralId, ReferralStatus newReferralStatus)
         {
             var referral = GetReferral(userId, referralId);
 
@@ -58,7 +55,7 @@ namespace LF.CartonCaps.Referrals.API.Proxies
             }
         }
 
-        public static string InviteFriend(string userId, string firstName, string lastName)
+        public string InviteFriend(string userId, string firstName, string lastName)
         {
             var referral = GetReferral(userId, firstName, lastName);
 
@@ -91,19 +88,19 @@ namespace LF.CartonCaps.Referrals.API.Proxies
             return newReferee.RefereeId;
         }
 
-        private static Referral? GetReferral(string userId, string referralId)
+        private Referral? GetReferral(string userId, string referralId)
         {
             var user = GetUser(userId);
             return user?.Referrals?.FirstOrDefault(x => x.RefereeId.Equals(referralId));
         }
 
-        private static Referral? GetReferral(string userId, string firstName, string lastName)
+        private Referral? GetReferral(string userId, string firstName, string lastName)
         {
             var user = GetUser(userId);
             return user?.Referrals?.FirstOrDefault(x => x.FirstName == firstName && x.LastName == lastName);
         }
 
-        private static User GetUser(string userId)
+        private User GetUser(string userId)
         {
             users.TryGetValue(userId, out User? user);
 
@@ -117,7 +114,7 @@ namespace LF.CartonCaps.Referrals.API.Proxies
             return user;
         }
 
-        private static void PopulateDatastore()
+        private void PopulateDatastore()
         {
             users.Add("1111", new User() { UserId = "1111", FirstName = "First", LastName = "User1", ReferralCode = "ABC123" });
             users.Add("2222", new User() { UserId = "2222", FirstName = "Second", LastName = "User2", ReferralCode = "XYZ789" });
@@ -130,7 +127,7 @@ namespace LF.CartonCaps.Referrals.API.Proxies
                 }]});
         }
 
-        private static void AddOrUpdateRefereeInActiveReferees(string refereeId, ReferralStatus referralStatus)
+        private void AddOrUpdateRefereeInActiveReferees(string refereeId, ReferralStatus referralStatus)
         {
             if (activeReferees.ContainsKey(refereeId))
             {
@@ -142,7 +139,7 @@ namespace LF.CartonCaps.Referrals.API.Proxies
             }
         }
 
-        private static void RemoveRefereeFromActiveReferees(string refereeId)
+        private void RemoveRefereeFromActiveReferees(string refereeId)
         {
             activeReferees.Remove(refereeId);
         }
