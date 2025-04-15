@@ -2,9 +2,9 @@
 {
     public class UserDoesNotExistException : Exception
     {
-        public int UserId { get; }
+        public string UserId { get; }
 
-        public UserDoesNotExistException(string message, int userId)
+        public UserDoesNotExistException(string message, string userId)
         : base(message)
         {
             UserId = userId;
