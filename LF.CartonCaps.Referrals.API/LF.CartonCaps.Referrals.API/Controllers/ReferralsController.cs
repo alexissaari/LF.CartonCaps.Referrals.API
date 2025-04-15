@@ -25,12 +25,19 @@ namespace LF.CartonCaps.Referrals.API.Controllers
         }
 
         [HttpPatch]
-        [Route("{userId}/{referralId}/{referralStatus}")]
+        [Route("ReferralStatus/{userId}/{referralId}/{referralStatus}")]
         public ActionResult PatchReferral(string userId, string referralId, ReferralStatus referralStatus)
         {
-            this.referralsService.PatchReferral(userId, referralId, referralStatus);
+            this.referralsService.UpdateReferralStatus(userId, referralId, referralStatus);
 
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("InviteFriend/{userId}/{firstName}/{lastName}")]
+        public ActionResult InviteFriend(string userId, string firstName, string lastName)
+        {
+            return Ok(this.referralsService.InviteFriend(userId, firstName, lastName));
         }
     }
 }

@@ -7,7 +7,10 @@ namespace LF.CartonCaps.Referrals.API.Services
     {
         public IList<Referral>? GetReferrals(string userId) => MochDatabaseProxy.GetReferrals(userId);
 
-        public void PatchReferral(string userId, string referralId, ReferralStatus referralStatus) 
-            => MochDatabaseProxy.PatchReferral(userId, referralId, referralStatus);
+        public void UpdateReferralStatus(string userId, string referralId, ReferralStatus referralStatus) 
+            => MochDatabaseProxy.UpdateReferralStatus(userId, referralId, referralStatus);
+
+        public string InviteFriend(string userId, string firstName, string lastName)
+            => MochDatabaseProxy.InviteFriend(userId, firstName, lastName);
     }
 }
