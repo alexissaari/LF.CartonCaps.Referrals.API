@@ -1,15 +1,16 @@
 ﻿using LF.CartonCaps.Referrals.API.Models;
+using LF.CartonCaps.Referrals.API.Models.Abstractions;
 using LF.CartonCaps.Referrals.API.Proxies;
 
 namespace LF.CartonCaps.Referrals.API.Services
 {
-    public class ReferralsService
+    public class ReferralsService : IReferralsService
     {
-        private DatabaseProxy databaseProxy;
+        private IDatabaseProxy databaseProxy;
 
-        public ReferralsService() 
+        public ReferralsService(IDatabaseProxy databaseProxy) 
         {
-            this.databaseProxy = new DatabaseProxy();
+            this.databaseProxy = databaseProxy;
         }
 
         public IList<Referral>? GetReferrals(string userId) => this.databaseProxy.GetReferrals(userId);

@@ -1,4 +1,5 @@
 ﻿using LF.CartonCaps.Referrals.API.Models;
+using LF.CartonCaps.Referrals.API.Models.Abstractions;
 using LF.CartonCaps.Referrals.API.Models.Exceptions;
 
 namespace LF.CartonCaps.Referrals.API.Proxies
@@ -13,7 +14,7 @@ namespace LF.CartonCaps.Referrals.API.Proxies
      * Since this service is responsible for creating and supporting referees, 
      * let's store all our active referees in a seperate datastore, for easy lookup.
      */
-    public class DatabaseProxy
+    public class DatabaseProxy : IDatabaseProxy
     {
         private Dictionary<string, User> users;
         private Dictionary<string, ReferralStatus> activeReferees;

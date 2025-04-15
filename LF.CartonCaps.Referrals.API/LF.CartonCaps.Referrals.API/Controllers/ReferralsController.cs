@@ -1,4 +1,5 @@
 using LF.CartonCaps.Referrals.API.Models;
+using LF.CartonCaps.Referrals.API.Models.Abstractions;
 using LF.CartonCaps.Referrals.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,12 +10,12 @@ namespace LF.CartonCaps.Referrals.API.Controllers
     public class ReferralsController : ControllerBase
     {
         private readonly ILogger<ReferralsController> logger;
-        private readonly ReferralsService referralsService;
+        private readonly IReferralsService referralsService;
 
-        public ReferralsController(ILogger<ReferralsController> logger)
+        public ReferralsController(ILogger<ReferralsController> logger, IReferralsService referralsService)
         {
             this.logger = logger;
-            this.referralsService = new ReferralsService();
+            this.referralsService = referralsService;
         }
 
         [HttpGet]
