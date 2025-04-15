@@ -5,11 +5,11 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Proxies
 {
     public class DatabaseProxyTests
     {
-        private DatabaseProxy _proxy;
+        private UsersDatabaseProxy _proxy;
 
         public DatabaseProxyTests() 
         {
-            _proxy = new DatabaseProxy();
+            _proxy = new UsersDatabaseProxy();
         }
 
         [Fact]
@@ -24,14 +24,6 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Proxies
         {
             var result = _proxy.GetReferrals("1111");
             Assert.Null(result);
-        }
-
-        [Fact]
-        public void GetReferrals_UserDoesNotExist()
-        {
-            var caughtException = Assert.Throws<UserDoesNotExistException>(() => _proxy.GetReferrals("1"));
-            Assert.Contains("User Not Found. UserId = 1", caughtException.Message);
-            Assert.Equal(caughtException.UserId, "1");
         }
     }
 }

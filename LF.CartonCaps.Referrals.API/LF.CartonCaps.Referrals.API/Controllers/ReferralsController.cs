@@ -1,6 +1,5 @@
 using LF.CartonCaps.Referrals.API.Models;
 using LF.CartonCaps.Referrals.API.Models.Abstractions;
-using LF.CartonCaps.Referrals.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LF.CartonCaps.Referrals.API.Controllers
@@ -26,19 +25,19 @@ namespace LF.CartonCaps.Referrals.API.Controllers
         }
 
         [HttpPatch]
-        [Route("ReferralStatus/{userId}/{referralId}/{referralStatus}")]
-        public ActionResult PatchReferral(string userId, string referralId, ReferralStatus referralStatus)
+        [Route("ReferralStatus/{referralId}/{referralStatus}")]
+        public ActionResult PatchReferral(string referralId, ReferralStatus referralStatus)
         {
-            this.referralsService.UpdateReferralStatus(userId, referralId, referralStatus);
+            this.referralsService.UpdateReferralStatus(referralId, referralStatus);
 
             return Ok();
         }
 
         [HttpGet]
-        [Route("InviteFriend/{userId}/{firstName}/{lastName}")]
-        public ActionResult InviteFriend(string userId, string firstName, string lastName)
+        [Route("InviteFriend/{userId}/{refereeFirstName}/{refereeLastName}")]
+        public ActionResult InviteFriend(string userId, string refereeFirstName, string refereeLastName)
         {
-            return Ok(this.referralsService.InviteFriend(userId, firstName, lastName));
+            return Ok(this.referralsService.InviteFriend(userId, refereeFirstName, refereeLastName));
         }
     }
 }
