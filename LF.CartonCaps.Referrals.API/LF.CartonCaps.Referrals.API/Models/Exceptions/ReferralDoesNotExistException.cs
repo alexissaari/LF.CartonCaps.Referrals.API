@@ -2,14 +2,20 @@
 {
     public class ReferralDoesNotExistException : Exception
     {
-        public string UserId { get; }
         public string ReferralId { get; }
+        public string? UserId { get; }
 
-        public ReferralDoesNotExistException(string message, string userId, string referralId)
+        public ReferralDoesNotExistException(string message, string referralId)
         : base(message)
         {
-            UserId = userId;
             ReferralId = referralId;
+        }
+
+        public ReferralDoesNotExistException(string message, string referralId, string userId)
+        : base(message)
+        {
+            ReferralId = referralId;
+            UserId = userId;
         }
     }
 }
