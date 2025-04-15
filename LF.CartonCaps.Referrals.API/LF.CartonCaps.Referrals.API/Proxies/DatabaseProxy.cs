@@ -16,16 +16,16 @@ namespace LF.CartonCaps.Referrals.API.Proxies
      * Since this service is responsible for creating and supporting referees, 
      * let's store all our active referees in a seperate datastore, for easy lookup.
      */
-    public static class MochDatabaseProxy
+    public static class DatabaseProxy
     {
         private static Dictionary<string, User> users;
         private static Dictionary<string, ReferralStatus> activeReferees;
 
-        static MochDatabaseProxy()
+        static DatabaseProxy()
         {
             users = new Dictionary<string, User>();
             activeReferees = new Dictionary<string, ReferralStatus>();
-            PopulateMochDatasource();
+            PopulateDatastore();
         }
 
         public static IList<Referral>? GetReferrals(string userId)
@@ -81,7 +81,7 @@ namespace LF.CartonCaps.Referrals.API.Proxies
                 RefereeId = refereeId,
                 FirstName = firstName,
                 LastName = lastName,
-                ReferralStatus = ReferralStatus.Created
+                ReferralStatus = ReferralStatus.Sent
             };
 
             user.Referrals.Add(newReferee);
@@ -117,7 +117,7 @@ namespace LF.CartonCaps.Referrals.API.Proxies
             return user;
         }
 
-        private static void PopulateMochDatasource()
+        private static void PopulateDatastore()
         {
             users.Add("1111", new User() { UserId = "1111", FirstName = "First", LastName = "User1", ReferralCode = "ABC123" });
             users.Add("2222", new User() { UserId = "2222", FirstName = "Second", LastName = "User2", ReferralCode = "XYZ789" });
@@ -126,7 +126,7 @@ namespace LF.CartonCaps.Referrals.API.Proxies
                     RefereeId = "1234", 
                     FirstName = "Alexis", 
                     LastName = "Saari", 
-                    ReferralStatus = ReferralStatus.Created,
+                    ReferralStatus = ReferralStatus.Sent,
                 }]});
         }
 
