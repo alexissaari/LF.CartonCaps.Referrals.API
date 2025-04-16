@@ -21,7 +21,9 @@ namespace LF.CartonCaps.Referrals.API.Controllers
         [Route("{userId}")]
         public ActionResult<List<Referral>> GetReferrals(string userId)
         {
-            return Ok(this.referralsService.GetReferrals(userId));
+            var result = this.referralsService.GetReferrals(userId);
+
+            return Ok(result);
         }
 
         [HttpPatch]
@@ -33,11 +35,13 @@ namespace LF.CartonCaps.Referrals.API.Controllers
             return Ok();
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("InviteFriend/{userId}/{refereeFirstName}/{refereeLastName}")]
         public ActionResult InviteFriend(string userId, string refereeFirstName, string refereeLastName)
         {
-            return Ok(this.referralsService.InviteFriend(userId, refereeFirstName, refereeLastName));
+            var result = this.referralsService.InviteFriend(userId, refereeFirstName, refereeLastName);
+
+            return Ok(result);
         }
     }
 }

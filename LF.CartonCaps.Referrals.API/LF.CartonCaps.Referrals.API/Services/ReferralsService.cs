@@ -1,17 +1,31 @@
-﻿using LF.CartonCaps.Referrals.API.Models;
+﻿using LF.CartonCaps.Referrals.API.ApiClients.FakeInMemoryDatastores;
+using LF.CartonCaps.Referrals.API.Models;
 using LF.CartonCaps.Referrals.API.Models.Abstractions;
 using LF.CartonCaps.Referrals.API.Models.Exceptions;
 using LF.CartonCaps.Referrals.API.Proxies;
 
 namespace LF.CartonCaps.Referrals.API.Services
 {
+    /*
+     * Services in this style of architecture are used to manage business logic.
+     */
     public class ReferralsService : IReferralsService
     {
-        public IList<Referral>? GetReferrals(string userId) => UsersFakeDatabase.GetReferrals(userId);
+        private readonly ICartonCapsApiClient usersDatabaseClient;
+
+        public ReferralsService(ICartonCapsApiClient usersDatabaseClient)
+        {
+            this.usersDatabaseClient = usersDatabaseClient;
+        }
+
+        public IList<Referral>? GetReferrals(string userId)
+        {
+            return this.usersDatabaseClient.GetReferrals(userId);
+        }
 
         public void UpdateReferralStatus(string referralId, ReferralStatus referralStatus)
         {
-            var activeReferral = ActiveReferralsFakeDatabase.GetActiveReferral(referralId);
+            var activeReferral = this.usersDatabaseClient.GetActiveReferral(referralId);
             if (activeReferral == null)
             {
                 throw new ReferralDoesNotExistException($"Referral Not Found. ReferralId = {referralId}.", referralId);
@@ -20,20 +34,20 @@ namespace LF.CartonCaps.Referrals.API.Services
             // Update our internal store of active referees
             if (referralStatus == ReferralStatus.Complete)
             {
-                ActiveReferralsFakeDatabase.RemoveActiveReferral(referralId);
+                this.usersDatabaseClient.RemoveActiveReferral(referralId);
             }
             else
             {
-                ActiveReferralsFakeDatabase.UpdateActiveReferral(referralId, referralStatus);
+                this.usersDatabaseClient.UpdateActiveReferral(referralId, referralStatus);
             }
 
             // Update the user who referred this person
-            UsersFakeDatabase.UpdateReferralStatus(activeReferral.OriginatingReferralUserId, referralId, referralStatus);
+            this.usersDatabaseClient.UpdateReferralStatus(activeReferral.OriginatingReferralUserId, referralId, referralStatus);
         }
 
         public string InviteFriend(string userId, string firstName, string lastName)
         {
-            var referral = UsersFakeDatabase.GetReferral(userId, firstName, lastName);
+            var referral = this.usersDatabaseClient.GetReferral(userId, firstName, lastName);
 
             // We have already referred this friend
             if (referral != null)
@@ -52,7 +66,7 @@ namespace LF.CartonCaps.Referrals.API.Services
             };
 
             // Add this friend to our user's list of referees
-            UsersFakeDatabase.AddReferee(userId, newReferee);
+            this.usersDatabaseClient.AddReferee(userId, newReferee);
 
             // Add this referee to our collection of active referees
             var activeReferral = new ActiveReferral()
@@ -60,7 +74,7 @@ namespace LF.CartonCaps.Referrals.API.Services
                 ReferralStatus = ReferralStatus.Sent,
                 OriginatingReferralUserId = userId
             };
-            ActiveReferralsFakeDatabase.AddActiveReferral(newReferee.RefereeId, userId);
+            this.usersDatabaseClient.AddActiveReferral(newReferee.RefereeId, userId);
 
             return newReferee.RefereeId;
         }
