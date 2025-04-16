@@ -14,6 +14,7 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
         private ReferralsController referralsController;
 
         private static readonly string someUserId = "someUserId";
+        private static readonly string someReferralId = "someReferralId";
 
         public ReferralsControllerTests() 
         {
@@ -28,11 +29,11 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
             // Arrange
             var expected = new List<Referral>() { new Referral() { RefereeId = "asdf", FirstName = "adf", LastName = "asd" }};
             this.referralsService
-                .Setup(x => x.GetReferrals(It.IsAny<string>()))
+                .Setup(x => x.GetReferrals(someUserId))
                 .Returns(expected);
 
             // Act
-            var response = this.referralsController.GetReferrals("asdf");
+            var response = this.referralsController.GetReferrals(someUserId);
             var result = response?.Result as Microsoft.AspNetCore.Mvc.OkObjectResult;
 
             // Assert
@@ -47,7 +48,7 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
             // Arrange
             IList<Referral> expected = null;
             this.referralsService
-                .Setup(x => x.GetReferrals(It.IsAny<string>()))
+                .Setup(x => x.GetReferrals(someUserId))
                 .Returns(expected);
 
             // Act
@@ -65,7 +66,7 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
         {
             // Arrange
             this.referralsService
-                .Setup(x => x.GetReferrals(It.IsAny<string>()))
+                .Setup(x => x.GetReferrals(someUserId))
                 .Throws(new UserDoesNotExistException($"User Not Found. UserId = {someUserId}.", someUserId));
 
             // Act
@@ -77,6 +78,84 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
             {
                 // Assert
                 Assert.Equal(someUserId, ex.UserId);
+                return;
+            }
+        }
+
+        [Fact]
+        public void PatchReferral()
+        {
+            // Arrange
+            this.referralsService.Setup(x => x.UpdateReferralStatus(someReferralId, ReferralStatus.Pending));
+
+            // Act
+            var response = this.referralsController.PatchReferral(someReferralId, ReferralStatus.Pending);
+            var result = response as Microsoft.AspNetCore.Mvc.OkResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(200, result.StatusCode);
+        }
+
+        [Fact]
+        public void PatchReferral_ReferralDoesNotExistException()
+        {
+            // Arrange
+            this.referralsService
+                .Setup(x => x.UpdateReferralStatus(someReferralId, ReferralStatus.Pending))
+                .Throws(new ReferralDoesNotExistException($"Referral Not Found. ReferralId = {someReferralId}.", someReferralId));
+
+            // Act
+            try
+            {
+                var response = this.referralsController.PatchReferral(someReferralId, ReferralStatus.Pending);
+            }
+            catch (ReferralDoesNotExistException ex)
+            {
+                // Assert
+                Assert.Equal(someReferralId, ex.ReferralId);
+                Assert.Equal($"Referral Not Found. ReferralId = {someReferralId}.", ex.Message);
+                return;
+            }
+        }
+
+        [Fact]
+        public void InviteFriend()
+        {
+            // Arrange
+            var expected = someReferralId;
+            this.referralsService
+                .Setup(x => x.InviteFriend(someUserId, "Alexis", "Saari"))
+                .Returns(expected);
+
+            // Act
+            var response = this.referralsController.InviteFriend(someUserId, "Alexis", "Saari");
+            var result = response as Microsoft.AspNetCore.Mvc.OkObjectResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(200, result.StatusCode);
+            Assert.Equal(expected, result.Value);
+        }
+
+        [Fact]
+        public void InviteFriend_UserDoesNotExistException()
+        {
+            // Arrange
+            this.referralsService
+                .Setup(x => x.InviteFriend(someUserId, "Alexis", "Saari"))
+                .Throws(new UserDoesNotExistException($"User Not Found. UserId = {someUserId}.", someUserId));
+
+            // Act
+            try
+            {
+                var response = this.referralsController.InviteFriend(someUserId, "Alexis", "Saari");
+            }
+            catch (UserDoesNotExistException ex)
+            {
+                // Assert
+                Assert.Equal(someUserId, ex.UserId);
+                Assert.Equal($"User Not Found. UserId = {someUserId}.", ex.Message);
                 return;
             }
         }
