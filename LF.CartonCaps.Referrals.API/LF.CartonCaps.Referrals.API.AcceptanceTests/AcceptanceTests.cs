@@ -70,6 +70,29 @@ namespace LF.CartonCaps.Referrals.API.AcceptanceTests
         }
 
         [Fact]
+        public async void IsReferee()
+        {
+            // Arrange - Add a new referral
+            var newUserFirstName = Guid.NewGuid().ToString();
+            var newUserLastName = Guid.NewGuid().ToString();
+            var addRoute = $"InviteFriend/{userIdWithReferrals}/{newUserFirstName}/{newUserLastName}";
+
+            var postResponse = await client.PostAsync(baseUri + addRoute, null);
+
+            Assert.Equal(HttpStatusCode.Created, postResponse.StatusCode);
+            var newReferralId = await postResponse.Content.ReadAsStringAsync();
+
+            // Act
+            var isRefereeRoute = $"IsReferral/{newReferralId}";
+            var response = await client.GetAsync(baseUri + isRefereeRoute);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var contentString = await response.Content.ReadAsStringAsync();
+            Assert.Equal("true", contentString);
+        }
+
+        [Fact]
         public async void GetReferralsForUserThatDoesNotExist()
         {
             // Act

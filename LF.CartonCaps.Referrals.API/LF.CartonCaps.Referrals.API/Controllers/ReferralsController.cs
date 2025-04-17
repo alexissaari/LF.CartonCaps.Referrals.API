@@ -32,6 +32,14 @@ namespace LF.CartonCaps.Referrals.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet]
+        [Route("IsReferral/{referralId}")]
+        [EndpointSummary("Returns if this referralId is in our collection of ActiveReferrals")]
+        public ActionResult GetIsReferral(string referralId)
+        {
+            return Ok(this.referralsService.IsReferral(referralId));
+        }
+
         [HttpPatch]
         [Route("ReferralStatus/{referralId}/{referralStatus}")]
         [EndpointSummary("Update Referral's ReferralStatus.")]

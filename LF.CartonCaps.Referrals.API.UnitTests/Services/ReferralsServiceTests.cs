@@ -78,6 +78,39 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Services
         }
 
         [Fact]
+        public void IsReferee()
+        {
+            // Arrange
+            var refereeExistsId = Guid.NewGuid().ToString();
+            this.usersDatabaseClientMock.Setup(x => x.GetActiveReferral(refereeExistsId))
+                .Returns(new ActiveReferral()
+                {
+                    OriginatingReferralUserId = "123",
+                    ReferralStatus = ReferralStatus.Pending
+                });
+
+            // Act
+            var isReferral = this.service.IsReferral(refereeExistsId);
+
+            // Assert
+            Assert.True(isReferral);
+        }
+
+        [Fact]
+        public void IsNotReferee()
+        {
+            // Arrange
+            var refereeDoesNotExistsId = Guid.NewGuid().ToString();
+            this.usersDatabaseClientMock.Setup(x => x.GetActiveReferral(refereeDoesNotExistsId));
+
+            // Act
+            var isReferral = this.service.IsReferral(refereeDoesNotExistsId);
+
+            // Assert
+            Assert.False(isReferral);
+        }
+
+        [Fact]
         public void UpdateReferralStatusToPending()
         {
             // Arrange

@@ -9,11 +9,11 @@ namespace LF.CartonCaps.Referrals.API.ApiClients.FakeInMemoryDatastores
      * This allows for easier lookup and allows a referred person's status to be updated 
      * without knowing the userId of who referred them.
      * 
-     * When a user refers a friend, the app will utilze a deeplink 3rd party service for managing deep links.
+     * When a user refers a friend, the app will utilze a deep link 3rd party service for managing deep links.
      * The app will then call this REST Api to add a referral for the user with Status = Sent.
      * 
-     * When the person being referred clicks their deeplink, 
-     * the deeplink service will direct them to the app store
+     * When the person being referred clicks their deep link, 
+     * the deep link service will direct them to the app store
      * and send a response to our app to update this referred person's referral status to Pending.
      * 
      * When a referral completes the user registration process,
