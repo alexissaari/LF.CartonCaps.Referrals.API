@@ -3,7 +3,7 @@
     public interface ICartonCapsApiClient
     {
         public IList<Referral>? GetReferrals(string userId);
-        public bool AddRefereeToUser(string userId, Referral referral);
+        public bool AddReferralToUser(string userId, Referral referral);
         public bool UpdateReferralStatusForUser(string userId, string referralId, ReferralStatus referralStatus);
 
         public ActiveReferral? GetActiveReferral(string referralId);

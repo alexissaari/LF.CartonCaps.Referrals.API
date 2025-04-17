@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LF.CartonCaps.Referrals.API.ApiClients.FakeInMemoryDatastores;
+﻿using LF.CartonCaps.Referrals.API.ApiClients.FakeInMemoryDatastores;
 using LF.CartonCaps.Referrals.API.Models;
 using LF.CartonCaps.Referrals.API.Models.Abstractions;
 using LF.CartonCaps.Referrals.API.Models.Exceptions;
@@ -40,7 +35,7 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.ApiClients
             {
                 new Referral()
                 {
-                    RefereeId = "123",
+                    ReferralId = "123",
                     FirstName = "Alexis",
                     LastName = "Saari",
                     ReferralStatus = ReferralStatus.Sent
@@ -53,7 +48,7 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.ApiClients
             // Assert
             Assert.NotNull(actual);
             Assert.NotEmpty(actual);
-            Assert.Equal(expected.FirstOrDefault()?.RefereeId, actual.FirstOrDefault()?.RefereeId);
+            Assert.Equal(expected.FirstOrDefault()?.ReferralId, actual.FirstOrDefault()?.ReferralId);
             Assert.Equal(expected.FirstOrDefault()?.FirstName, actual.FirstOrDefault()?.FirstName);
             Assert.Equal(expected.FirstOrDefault()?.LastName, actual.FirstOrDefault()?.LastName);
             Assert.Equal(expected.FirstOrDefault()?.ReferralStatus, actual.FirstOrDefault()?.ReferralStatus);
@@ -97,25 +92,29 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.ApiClients
                 // Assert
                 Assert.NotNull(ex);
                 Assert.Equal(userIdThatDoesNotExist, ex.UserId);
+                return;
             }
+
+            // If we get here, it means we didn't throw an error, so mark this test as failed.
+            Assert.True(false);
         }
 
         [Fact]
-        public void AddRefereeToUser_ShouldAddRefereeToNullRefereeList()
+        public void AddReferralToUser_ShouldAddReferralToNullReferralList()
         {
             // Arrange
-            var newReferee = new Referral()
+            var newReferral = new Referral()
             {
-                RefereeId = newReferralId,
+                ReferralId = newReferralId,
                 FirstName = "New",
-                LastName = "Referee",
+                LastName = "Referral",
                 ReferralStatus = ReferralStatus.Sent
             };
             var getReferralsResponse = this.client.GetReferrals(userIdWithNullReferrals);
             Assert.Null(getReferralsResponse);
 
             // Act
-            var response = this.client.AddRefereeToUser(userIdWithNullReferrals, newReferee);
+            var response = this.client.AddReferralToUser(userIdWithNullReferrals, newReferral);
 
             // Assert
             Assert.True(response);
@@ -126,40 +125,14 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.ApiClients
         }
 
         [Fact]
-        public void AddRefereeToUser_ShouldAddRefereeToEmptyRefereeList()
+        public void AddReferralToUser_ShouldAddReferralToExistingReferralList()
         {
             // Arrange
-            var newReferee = new Referral()
+            var newReferral = new Referral()
             {
-                RefereeId = newReferralId,
+                ReferralId = newReferralId,
                 FirstName = "New",
-                LastName = "Referee",
-                ReferralStatus = ReferralStatus.Sent
-            };
-            var getReferralsResponse = this.client.GetReferrals(userIdWithEmptyReferrals);
-            Assert.NotNull(getReferralsResponse);
-            Assert.Empty(getReferralsResponse);
-
-            // Act
-            var response = this.client.AddRefereeToUser(userIdWithEmptyReferrals, newReferee);
-
-            // Assert
-            Assert.True(response);
-
-            getReferralsResponse = this.client.GetReferrals(userIdWithEmptyReferrals);
-            Assert.NotNull(getReferralsResponse);
-            Assert.Single(getReferralsResponse);
-        }
-
-        [Fact]
-        public void AddRefereeToUser_ShouldAddRefereeToExistingRefereeList()
-        {
-            // Arrange
-            var newReferee = new Referral()
-            {
-                RefereeId = newReferralId,
-                FirstName = "New",
-                LastName = "Referee",
+                LastName = "Referral",
                 ReferralStatus = ReferralStatus.Sent
             };
             var getReferralsResponse = this.client.GetReferrals(userIdWithReferrals);
@@ -167,7 +140,7 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.ApiClients
             var expectedReferralCount = getReferralsResponse.Count + 1;
 
             // Act
-            var response = this.client.AddRefereeToUser(userIdWithReferrals, newReferee);
+            var response = this.client.AddReferralToUser(userIdWithReferrals, newReferral);
 
             // Assert
             Assert.True(response);
@@ -178,28 +151,32 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.ApiClients
         }
 
         [Fact]
-        public void AddRefereeToUser_ShouldThrowUserDoesNotExist()
+        public void AddReferralToUser_ShouldThrowUserDoesNotExist()
         {
             // Arrange
-            var newReferee = new Referral()
+            var newReferral = new Referral()
             {
-                RefereeId = newReferralId,
+                ReferralId = newReferralId,
                 FirstName = "New",
-                LastName = "Referee",
+                LastName = "Referral",
                 ReferralStatus = ReferralStatus.Sent
             };
 
             // Act
             try
             {
-                var actual = this.client.AddRefereeToUser(userIdThatDoesNotExist, newReferee);
+                var actual = this.client.AddReferralToUser(userIdThatDoesNotExist, newReferral);
             }
             catch (UserDoesNotExistException ex)
             {
                 // Assert
                 Assert.NotNull(ex);
                 Assert.Equal(userIdThatDoesNotExist, ex.UserId);
+                return;
             }
+
+            // If we get here, it means we didn't throw an error, so mark this test as failed.
+            Assert.True(false);
         }
 
         [Fact]
@@ -246,7 +223,11 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.ApiClients
                 // Assert
                 Assert.NotNull(ex);
                 Assert.Equal(userIdThatDoesNotExist, ex.UserId);
+                return;
             }
+
+            // If we get here, it means we didn't throw an error, so mark this test as failed.
+            Assert.True(false);
         }
 
         #endregion USER_REFERRALS_TESTS

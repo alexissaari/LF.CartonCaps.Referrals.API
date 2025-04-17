@@ -41,14 +41,14 @@ namespace LF.CartonCaps.Referrals.API.Controllers
         }
 
         [HttpPost]
-        [Route("InviteFriend/{userId}/{refereeFirstName}/{refereeLastName}")]
-        public ActionResult InviteFriend(string userId, string refereeFirstName, string refereeLastName)
+        [Route("InviteFriend/{userId}/{referralFirstName}/{referralLastName}")]
+        public ActionResult InviteFriend(string userId, string referralFirstName, string referralLastName)
         {
-            var newReferralId = this.referralsService.InviteFriend(userId, refereeFirstName, refereeLastName);
+            var newReferralId = this.referralsService.InviteFriend(userId, referralFirstName, referralLastName);
 
             if (string.IsNullOrWhiteSpace(newReferralId))
             {
-                return BadRequest("Failed to invite friend.");
+                return BadRequest($"Failed to invite friend {referralFirstName} {referralLastName} to user {userId}");
             }
 
             var uri = Url.Action(nameof(GetReferrals), new { userId = userId });

@@ -43,8 +43,8 @@ namespace LF.CartonCaps.Referrals.API.AcceptanceTests
             var referrals = await Helper.GetReferralsReadAndDeserialize(client, userIdWithReferrals);
             var referralsCount = referrals?.Count;
             Assert.Equal(existingReferrals?.Count + 1, referralsCount);
-            var newReferral = referrals?.FirstOrDefault(r => r.RefereeId == newReferralId);
-            Assert.Equal(newReferralId, newReferral?.RefereeId);
+            var newReferral = referrals?.FirstOrDefault(r => r.ReferralId == newReferralId);
+            Assert.Equal(newReferralId, newReferral?.ReferralId);
             Assert.Equal(newUserFirstName, newReferral?.FirstName);
             Assert.Equal(newUserLastName, newReferral?.LastName);
             Assert.Equal(ReferralStatus.Sent, newReferral?.ReferralStatus);
@@ -56,7 +56,7 @@ namespace LF.CartonCaps.Referrals.API.AcceptanceTests
 
             // Verify our update worked
             referrals = await Helper.GetReferralsReadAndDeserialize(client, userIdWithReferrals);
-            newReferral = referrals?.FirstOrDefault(r => r.RefereeId == newReferralId);
+            newReferral = referrals?.FirstOrDefault(r => r.ReferralId == newReferralId);
             Assert.Equal(ReferralStatus.Pending, newReferral?.ReferralStatus);
 
             // Update our added referral to ReferralStatus.Complete
@@ -66,7 +66,7 @@ namespace LF.CartonCaps.Referrals.API.AcceptanceTests
 
             // Verify our update worked
             referrals = await Helper.GetReferralsReadAndDeserialize(client, userIdWithReferrals);
-            newReferral = referrals?.FirstOrDefault(r => r.RefereeId == newReferralId);
+            newReferral = referrals?.FirstOrDefault(r => r.ReferralId == newReferralId);
             Assert.Equal(ReferralStatus.Complete, newReferral?.ReferralStatus);
         }
     }
