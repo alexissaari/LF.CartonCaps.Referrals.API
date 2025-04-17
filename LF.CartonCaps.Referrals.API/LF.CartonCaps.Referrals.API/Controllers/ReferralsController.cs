@@ -21,23 +21,38 @@ namespace LF.CartonCaps.Referrals.API.Controllers
         [Route("{userId}")]
         public ActionResult<List<Referral>> GetReferrals(string userId)
         {
-            return Ok(this.referralsService.GetReferrals(userId));
+            var result = this.referralsService.GetReferrals(userId);
+
+            if (result == null)
+            {
+                return NoContent();
+            }
+
+            return Ok(result);
         }
 
         [HttpPatch]
         [Route("ReferralStatus/{referralId}/{referralStatus}")]
         public ActionResult PatchReferral(string referralId, ReferralStatus referralStatus)
         {
-            this.referralsService.UpdateReferralStatus(referralId, referralStatus);
+            var success = this.referralsService.UpdateReferralStatus(referralId, referralStatus);
 
-            return Ok();
+            return success ? Ok() : BadRequest("Failed to update referral status.");
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("InviteFriend/{userId}/{refereeFirstName}/{refereeLastName}")]
         public ActionResult InviteFriend(string userId, string refereeFirstName, string refereeLastName)
         {
-            return Ok(this.referralsService.InviteFriend(userId, refereeFirstName, refereeLastName));
+            var newReferralId = this.referralsService.InviteFriend(userId, refereeFirstName, refereeLastName);
+
+            if (string.IsNullOrWhiteSpace(newReferralId))
+            {
+                return BadRequest("Failed to invite friend.");
+            }
+
+            var uri = Url.Action(nameof(GetReferrals), new { userId = userId });
+            return Created(uri, newReferralId);
         }
     }
 }
