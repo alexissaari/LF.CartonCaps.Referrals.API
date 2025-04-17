@@ -41,11 +41,13 @@ namespace LF.CartonCaps.Referrals.API.Proxies
             if (user != null)
             {
                 var referral = GetReferral(user, referralId);
-                if (referral != null)
+                if (referral == null)
                 {
-                    referral.ReferralStatus = referralStatus;
-                    return UsersDatastore.UpdateUser(user);
+                    throw new ReferralDoesNotExistOnUserException($"Referral {referralId} does not exist on User {userId}", userId, referralId);
                 }
+
+                referral.ReferralStatus = referralStatus;
+                return UsersDatastore.UpdateUser(user);
             }
             return false;
         }

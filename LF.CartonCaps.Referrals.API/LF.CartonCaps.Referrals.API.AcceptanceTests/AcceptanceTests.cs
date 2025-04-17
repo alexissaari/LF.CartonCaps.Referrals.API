@@ -82,7 +82,7 @@ namespace LF.CartonCaps.Referrals.API.AcceptanceTests
         }
 
         [Fact]
-        public async void PatchReferralForReferralsThatDoesNotExist()
+        public async void PatchReferralForReferralThatDoesNotExist()
         {
             // Act
             var referralIdThatDoesNotExist = Guid.NewGuid().ToString();
