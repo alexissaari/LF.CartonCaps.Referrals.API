@@ -12,7 +12,6 @@ Users can invite their friends to join Carton Caps by clicking `Share`. The app 
 
 When a referee clicks the deep link, the deep link service is able to notify the app of the referee's action and the app can in turn can call this API's `PATCH ReferralStatus/{referralId}/{referralStatus}` route to update the referee's status to Pending. Once the app loads for the referee, the app is able to determine if they are a referee by calling the `UserIsReferee/{referralId}` route and can show the approprate Sign Up page. After the referee has created a new account in the app, the patch route is used again to update the referee's status to Complete.
 
-
 ### Endpoints
 > ```http 
 > GET /Referrals/{userId}
