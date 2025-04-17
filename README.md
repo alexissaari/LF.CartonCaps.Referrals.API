@@ -4,9 +4,12 @@ LiveFront's Code Challenge - Carton Caps Referrals API
 This .NET8.0 REST Api handles the Referrals side of the Carton Caps App.
 
 ### App Integration
-When a User of Carton Caps clicks on the `Invite Friends` page, the app calls this REST Api's GetReferrals/{userId} route, which returns all Referrals the User has made.
+When a User of Carton Caps clicks on the Invite Friends page, the app calls this REST Api's `GET GetReferrals/{userId}` route, which returns all Referrals the User has made.
 
-Users can invite friends to join Carton Caps by clicking `Share`. Call this API to get referralId and send that to deep link software to keep track of
+Users can invite their friends to join Carton Caps by clicking `Share`. The app first calls this REST Api's `POST InviteFriend/{userId}/{referralFirstName}/{referralLastName}` route to create a new Referral on both the User.Referrals list and the ActiveReferrals collection (Status = Sent), and then return the newly created Referral's ReferralId. The app utilizes a 3rd party deep link service to create a deep link using the ReferralId.
+
+When a referee clicks the deep link, the deep link service is able to notify the app of the referee's action and the app can in turn can call this API's `PATCH ReferralStatus/{referralId}/{referralStatus}` route to update the referee's status (Status = Pending). This route is also used once a referee has created a new account (Status = Complete).
+
 
 ### Endpoints
 > ```http 
