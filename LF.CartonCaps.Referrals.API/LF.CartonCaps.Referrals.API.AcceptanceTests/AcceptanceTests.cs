@@ -6,33 +6,68 @@ namespace LF.CartonCaps.Referrals.API.AcceptanceTests
 {
     public class AcceptanceTests
     {
-        [Fact]
-        public async void GetAsync()
+        HttpClient client;
+        string baseUri = "http://localhost:5244/Referrals/";
+
+        private static readonly string userIdWithNullReferrals = "1";
+        private static readonly string userIdWithEmptyReferrals = "2";
+        private static readonly string userIdWithReferrals = "3";
+        private static readonly string userIdThatDoesNotExist = "12345";
+        private static readonly string referralId = "123";
+        private static readonly string newReferralId = "asdf";
+
+        public AcceptanceTests()
         {
-            // Arrange
-            var client = new HttpClient();
-            var requestUri = "http://localhost:5244/Referrals/3";
-            // Act
-            var response = await client.GetAsync(requestUri);
+            client = new HttpClient();
+            client.BaseAddress = new Uri(baseUri);
+        }
 
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        [Fact]
+        public async void AddUpdateDeleteReferral()
+        {
+            // Get existing referrals for a user
+            var existingReferrals = await Helper.GetReferralsReadAndDeserialize(client, userIdWithReferrals);
+            var initialReferralCount = existingReferrals?.Count;
 
-            // Validate the response body
-            var contentString = await response.Content.ReadAsStringAsync();
-            Assert.NotEmpty(contentString);
+            // Add a new referral
+            var newUserFirstName = Guid.NewGuid().ToString();
+            var newUserLastName = Guid.NewGuid().ToString();
+            var addRoute = $"InviteFriend/{userIdWithReferrals}/{newUserFirstName}/{newUserLastName}";
+            
+            var postResponse = await client.PostAsync(baseUri + addRoute, null);
+            
+            Assert.Equal(HttpStatusCode.Created, postResponse.StatusCode);
+            var newReferralId = await postResponse.Content.ReadAsStringAsync();
 
-            IList<Referral>? referrals = JsonConvert.DeserializeObject<IList<Referral>>(contentString);
-            Assert.NotNull(referrals);
-            Assert.NotEmpty(referrals);
+            // Make sure the referral we just added is in the list
+            var referrals = await Helper.GetReferralsReadAndDeserialize(client, userIdWithReferrals);
+            var referralsCount = referrals?.Count;
+            Assert.Equal(existingReferrals?.Count + 1, referralsCount);
+            var newReferral = referrals?.FirstOrDefault(r => r.RefereeId == newReferralId);
+            Assert.Equal(newReferralId, newReferral?.RefereeId);
+            Assert.Equal(newUserFirstName, newReferral?.FirstName);
+            Assert.Equal(newUserLastName, newReferral?.LastName);
+            Assert.Equal(ReferralStatus.Sent, newReferral?.ReferralStatus);
 
-            foreach (var referral in referrals)
-            {
-                Assert.NotNull(referral.RefereeId);
-                Assert.NotNull(referral.FirstName);
-                Assert.NotNull(referral.LastName);
-                Assert.Equal(ReferralStatus.Sent, referral.ReferralStatus);
-            }
+            // Update our added referral to ReferralStatus.Pending
+            var patchRoute = $"ReferralStatus/{newReferralId}/{ReferralStatus.Pending}";
+            var patchResponse = await client.PatchAsync(baseUri + patchRoute, null);
+            Assert.Equal(HttpStatusCode.OK, patchResponse.StatusCode);
+
+            // Verify our update worked
+            referrals = await Helper.GetReferralsReadAndDeserialize(client, userIdWithReferrals);
+            newReferral = referrals?.FirstOrDefault(r => r.RefereeId == newReferralId);
+            Assert.Equal(ReferralStatus.Pending, newReferral?.ReferralStatus);
+
+            // Update our added referral to ReferralStatus.Complete
+            patchRoute = $"ReferralStatus/{newReferralId}/{ReferralStatus.Complete}";
+            patchResponse = await client.PatchAsync(baseUri + patchRoute, null);
+            Assert.Equal(HttpStatusCode.OK, patchResponse.StatusCode);
+
+            // Verify our update worked
+            referrals = await Helper.GetReferralsReadAndDeserialize(client, userIdWithReferrals);
+            newReferral = referrals?.FirstOrDefault(r => r.RefereeId == newReferralId);
+            Assert.Equal(ReferralStatus.Complete, newReferral?.ReferralStatus);
         }
     }
 }

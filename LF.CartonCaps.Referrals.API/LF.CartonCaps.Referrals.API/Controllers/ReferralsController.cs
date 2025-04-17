@@ -23,6 +23,11 @@ namespace LF.CartonCaps.Referrals.API.Controllers
         {
             var result = this.referralsService.GetReferrals(userId);
 
+            if (result == null)
+            {
+                return NoContent();
+            }
+
             return Ok(result);
         }
 
@@ -46,7 +51,8 @@ namespace LF.CartonCaps.Referrals.API.Controllers
                 return BadRequest("Failed to invite friend.");
             }
 
-            return Ok(newReferralId);
+            var uri = Url.Action(nameof(GetReferrals), new { userId = userId });
+            return Created(uri, newReferralId);
         }
     }
 }
