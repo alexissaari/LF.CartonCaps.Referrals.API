@@ -6,11 +6,11 @@ Ideally, this REST Api would connect to LF.CartonCaps.Api for connecting to our 
 
 ### App Integration
 When a User of Carton Caps clicks on the `Invite Friends` page, the app calls this REST Api's `GET GetReferrals/{userId}` route, 
-which returns all the Referrals the User has made, including first and last names and referral status (Sent, Pending, or Complete).
+which returns all the Referrals the User has made, including FirstName, LastName, and ReferralStatus (Sent, Pending, or Complete).
 
 Users can invite their friends to join Carton Caps by clicking `Share`. The app first calls this REST Api's `POST InviteFriend/{userId}/{referralFirstName}/{referralLastName}` route to create a new Referral on both the User.Referrals list and the ActiveReferrals collection, with a status of Sent. The response is the newly created Referral's ReferralId. The app utilizes a 3rd party deep link service to create a deep link using the ReferralId and the User's ShareableReferralCode, which is already stored within the app.
 
-When a referee clicks the deep link, the deep link service is able to notify the app of the referee's action and the app can in turn can call this API's `PATCH ReferralStatus/{referralId}/{referralStatus}` route to update the referee's status to Pending. Once the app loads for the referee, the app is able to determine if they are a referee by calling the `UserIsReferee/{referralId}` route and can show the approprate Sign Up page. After the referee has created a new account in the app, the patch route is used again to update the referee's status to Complete.
+When a referee clicks the deep link, the deep link service is able to notify the app of the referee's action and the app can in turn can call this API's `PATCH ReferralStatus/{referralId}/{referralStatus}` route to update the referee's status to Pending. Once the app loads for the referee, the app is able to determine if they are a referee by calling the `GET IsReferee/{referralId}` route and show the approprate `Sign Up` page. After the referee has created a new account in the app, the patch route is used again to update the referee's status to Complete and remove this referee from ActiveReferrals.
 
 ### Endpoints
 > ```http 
