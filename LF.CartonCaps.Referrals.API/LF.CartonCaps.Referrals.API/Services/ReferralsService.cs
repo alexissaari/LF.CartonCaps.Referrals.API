@@ -1,13 +1,11 @@
-﻿using LF.CartonCaps.Referrals.API.ApiClients.FakeInMemoryDatastores;
-using LF.CartonCaps.Referrals.API.Models;
+﻿using LF.CartonCaps.Referrals.API.Models;
 using LF.CartonCaps.Referrals.API.Models.Abstractions;
 using LF.CartonCaps.Referrals.API.Models.Exceptions;
-using LF.CartonCaps.Referrals.API.Proxies;
 
 namespace LF.CartonCaps.Referrals.API.Services
 {
     /*
-     * Services in this style of architecture are used to manage business logic.
+     * Business logic goes here :)
      */
     public class ReferralsService : IReferralsService
     {
@@ -34,7 +32,7 @@ namespace LF.CartonCaps.Referrals.API.Services
             bool updateOrRemoveActiveReferralIsSuccessful;
             bool updatUserReferralIsSuccessful;
 
-            // Update our internal store of active referees
+            // Update our internal store of active referrals
             if (referralStatus == ReferralStatus.Complete)
             {
                 updateOrRemoveActiveReferralIsSuccessful = this.usersDatabaseClient.RemoveActiveReferral(referralId);
@@ -60,31 +58,35 @@ namespace LF.CartonCaps.Referrals.API.Services
             // We have already referred this friend
             if (referral != null)
             {
-                return referral.RefereeId;
+                return referral.ReferralId;
             }
 
-            // We have not referred this friend
-            var refereeId = Guid.NewGuid().ToString();
-            var newReferee = new Referral()
+            var referralId = Guid.NewGuid().ToString();
+            var newReferral = new Referral()
             {
-                RefereeId = refereeId,
+                ReferralId = referralId,
                 FirstName = firstName,
                 LastName = lastName,
                 ReferralStatus = ReferralStatus.Sent
             };
 
-            // Add this friend to our user's list of referees
-            this.usersDatabaseClient.AddRefereeToUser(userId, newReferee);
+            // Add this friend to our user's list of referrals
+            var addReferralToUserIsSuccessful = this.usersDatabaseClient.AddReferralToUser(userId, newReferral);
 
-            // Add this referee to our collection of active referees
+            // Add this referral to our collection of ActiveReferrals
             var activeReferral = new ActiveReferral()
             {
                 ReferralStatus = ReferralStatus.Sent,
                 OriginatingReferralUserId = userId
             };
-            this.usersDatabaseClient.AddActiveReferral(newReferee.RefereeId, userId);
+            var addActiveReferralIsSuccessful = this.usersDatabaseClient.AddActiveReferral(newReferral.ReferralId, userId);
 
-            return newReferee.RefereeId;
+            if (!addReferralToUserIsSuccessful || !addActiveReferralIsSuccessful)
+            {
+                return null;
+            }
+
+            return newReferral.ReferralId;
         }
     }
 }

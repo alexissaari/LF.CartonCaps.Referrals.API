@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using LF.CartonCaps.Referrals.API.ApiClients.FakeInMemoryDatastores;
+﻿using LF.CartonCaps.Referrals.API.ApiClients.FakeInMemoryDatastores;
 using LF.CartonCaps.Referrals.API.Models;
 using LF.CartonCaps.Referrals.API.Models.Abstractions;
 using LF.CartonCaps.Referrals.API.Models.Exceptions;
@@ -24,7 +23,7 @@ namespace LF.CartonCaps.Referrals.API.Proxies
             return GetUser(userId).Referrals;
         }
 
-        public bool AddRefereeToUser(string userId, Referral referral)
+        public bool AddReferralToUser(string userId, Referral referral)
         {
             var user = GetUser(userId);
             if (user.Referrals == null)
@@ -63,7 +62,7 @@ namespace LF.CartonCaps.Referrals.API.Proxies
 
         private Referral? GetReferral(User user, string referralId)
         {
-            return user.Referrals?.FirstOrDefault(x => x.RefereeId == referralId);
+            return user.Referrals?.FirstOrDefault(x => x.ReferralId == referralId);
         }
 
         #endregion USER_REFERRALS
@@ -72,28 +71,28 @@ namespace LF.CartonCaps.Referrals.API.Proxies
 
         public ActiveReferral? GetActiveReferral(string referralId)
         {
-            return ActiveRefereesDatastore.GetActiveReferral(referralId);
+            return ActiveReferralsDatastore.GetActiveReferral(referralId);
         }
 
         public bool AddActiveReferral(string referralId, string originatingReferralUserId)
         {
-            var newReferee = new ActiveReferral()
+            var newReferral = new ActiveReferral()
             {
                 ReferralStatus = ReferralStatus.Sent,
                 OriginatingReferralUserId = originatingReferralUserId,
             };
 
-            return ActiveRefereesDatastore.AddActiveReferral(referralId, newReferee);
+            return ActiveReferralsDatastore.AddActiveReferral(referralId, newReferral);
         }
 
         public bool UpdateActiveReferral(string referralId, ReferralStatus referralStatus)
         {
-            return ActiveRefereesDatastore.UpdateActiveReferral(referralId, referralStatus);
+            return ActiveReferralsDatastore.UpdateActiveReferral(referralId, referralStatus);
         }
 
         public bool RemoveActiveReferral(string referralId)
         {
-            return ActiveRefereesDatastore.RemoveActiveReferral(referralId);
+            return ActiveReferralsDatastore.RemoveActiveReferral(referralId);
         }
 
         #endregion ACTIVE_REFERALS

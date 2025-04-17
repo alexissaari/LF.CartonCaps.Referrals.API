@@ -32,7 +32,7 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
         public void GetReferrals_ShouldReturnUserReferrals()
         {
             // Arrange
-            var expected = new List<Referral>() { new Referral() { RefereeId = "asdf", FirstName = "adf", LastName = "asd" }};
+            var expected = new List<Referral>() { new Referral() { ReferralId = "asdf", FirstName = "adf", LastName = "asd" }};
             this.referralsService
                 .Setup(x => x.GetReferrals(someUserId))
                 .Returns(expected);
@@ -84,6 +84,9 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
                 Assert.Equal(someUserId, ex.UserId);
                 return;
             }
+
+            // If we get here, it means we didn't throw an error, so mark this test as failed.
+            Assert.True(false);
         }
 
         [Fact]
@@ -124,7 +127,7 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
             // Arrange
             this.referralsService
                 .Setup(x => x.UpdateReferralStatus(someReferralId, ReferralStatus.Pending))
-                .Throws(new ActiveReferralDoesNotExistException($"Referral Not Found. ReferralId = {someReferralId}.", someReferralId));
+                .Throws(new ActiveReferralDoesNotExistException($"ActiveReferral not found. ReferralId = {someReferralId}.", someReferralId));
 
             // Act
             try
@@ -135,7 +138,7 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
             {
                 // Assert
                 Assert.Equal(someReferralId, ex.ReferralId);
-                Assert.Equal($"Referral Not Found. ReferralId = {someReferralId}.", ex.Message);
+                Assert.Equal($"ActiveReferral not found. ReferralId = {someReferralId}.", ex.Message);
                 return;
             }
         }
@@ -196,6 +199,9 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
                 Assert.Equal($"User Not Found. UserId = {someUserId}.", ex.Message);
                 return;
             }
+
+            // If we get here, it means we didn't throw an error, so mark this test as failed.
+            Assert.True(false);
         }
     }
 }
