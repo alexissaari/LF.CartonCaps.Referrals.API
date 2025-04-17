@@ -201,13 +201,27 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.ApiClients
         }
 
         [Fact]
-        public void UpdateReferralStatusForUser_ShouldReturnFlaseWhenReferralDoesNotExist()
+        public void UpdateReferralStatusForUser_ThrowsReferralDoesNotExistOnUser()
         {
+            // Arrange
+            var referralIdNotOnUser = Guid.NewGuid().ToString();
+            
             // Act
-            var response = this.client.UpdateReferralStatusForUser(userIdWithNullReferrals, referralId, ReferralStatus.Pending);
+            try
+            {
+                this.client.UpdateReferralStatusForUser(userIdWithReferrals, referralIdNotOnUser, ReferralStatus.Pending);
+            }
+            catch (ReferralDoesNotExistOnUserException ex)
+            {
+                // Assert
+                Assert.NotNull(ex);
+                Assert.Equal(userIdWithReferrals, ex.UserId);
+                Assert.Equal(referralIdNotOnUser, ex.ReferralId);
+                return;
+            }
 
-            // Assert
-            Assert.False(response);
+            // If we get here, it means we didn't throw an error, so mark this test as failed.
+            Assert.True(false);
         }
 
         [Fact]

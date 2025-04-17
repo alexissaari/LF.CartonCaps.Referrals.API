@@ -187,6 +187,41 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Services
             Assert.True(false);
         }
 
+        [Fact]
+        public void UpdateReferralStatus_ThrowsReferralDoesNotExistOnUser()
+        {
+            // Arrange
+            var userId = Guid.NewGuid().ToString();
+            var referralId = Guid.NewGuid().ToString();
+            var activeReferral = new ActiveReferral()
+            {
+                OriginatingReferralUserId = userId,
+                ReferralStatus = ReferralStatus.Pending
+            };
+            this.usersDatabaseClientMock.Setup(x => x.GetActiveReferral(referralId))
+                .Returns(activeReferral);
+            this.usersDatabaseClientMock.Setup(x => x.RemoveActiveReferral(referralId))
+                .Returns(false);
+            this.usersDatabaseClientMock.Setup(x => x.UpdateReferralStatusForUser(userId, referralId, ReferralStatus.Complete))
+                .Throws(new UserDoesNotExistException($"User Not Found. UserId = {userId}.", userId));
+
+            // Act
+            try
+            {
+                this.service.UpdateReferralStatus(referralId, ReferralStatus.Complete);
+            }
+            catch (UserDoesNotExistException ex)
+            {
+                // Assert
+                Assert.Equal($"User Not Found. UserId = {userId}.", ex.Message);
+                Assert.Equal(userId, ex.UserId);
+                return;
+            }
+
+            // If we get here, it means we didn't throw an error, so mark this test as failed.
+            Assert.True(false);
+        }
+
 
         [Fact]
         public void UpdateReferralStatus_ThrowsActiveReferralDoesNotExistException()
