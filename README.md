@@ -1,6 +1,13 @@
 # LF.CartonCaps.Referrals.API
 LiveFront's Code Challenge - Carton Caps Referrals API
 
+This .NET8.0 REST Api handles the Referrals side of the Carton Caps App.
+
+### App Integration
+When a User of Carton Caps clicks on the `Invite Friends` page, the app calls this REST Api's GetReferrals/{userId} route, which returns all Referrals the User has made.
+
+Users can invite friends to join Carton Caps by clicking `Share`. Call this API to get referralId and send that to deep link software to keep track of
+
 ### Endpoints
 > ```http 
 > GET /Referrals/{userId}
