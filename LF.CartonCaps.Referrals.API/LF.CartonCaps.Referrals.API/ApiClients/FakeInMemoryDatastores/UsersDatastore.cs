@@ -28,30 +28,36 @@ namespace LF.CartonCaps.Referrals.API.ApiClients.FakeInMemoryDatastores
             return user;
         }
 
-        public static void UpdateUser(string userId, User user)
+        public static bool UpdateUser(User user)
         {
-            if (users.ContainsKey(userId))
+            if (users.TryGetValue(user.UserId, out User? existingUser))
             {
-                users[userId] = user;
+                return users.TryUpdate(user.UserId, user, existingUser);
             }
-            else
-            {
-                users.TryAdd(userId, user);
-            }
+            return false;
         }
 
         private static void PopulateDatastore()
         {
-            users.TryAdd("1111", new User() { UserId = "1111", FirstName = "First", LastName = "User1", ShareableReferralCode = "ABC123" });
-            users.TryAdd("2222", new User() { UserId = "2222", FirstName = "Second", LastName = "User2", ShareableReferralCode = "XYZ789" });
-            users.TryAdd("3333", new User()
+            users.TryAdd("1", new User() { UserId = "1", FirstName = "First", LastName = "User1", ShareableReferralCode = "A1B2C3" });
+            
+            users.TryAdd("2", new User() 
+            { 
+                UserId = "2", 
+                FirstName = "Second", 
+                LastName = "User2", 
+                ShareableReferralCode = "X7Y8Z9",
+                Referrals = new List<Referral>()
+            });
+            
+            users.TryAdd("3", new User()
             {
-                UserId = "3333",
+                UserId = "3",
                 FirstName = "Third",
                 LastName = "User3",
-                ShareableReferralCode = "LMN555",
+                ShareableReferralCode = "LMNOP1",
                 Referrals = [ new Referral() {
-                    RefereeId = "1234",
+                    RefereeId = "123",
                     FirstName = "Alexis",
                     LastName = "Saari",
                     ReferralStatus = ReferralStatus.Sent,

@@ -30,18 +30,23 @@ namespace LF.CartonCaps.Referrals.API.Controllers
         [Route("ReferralStatus/{referralId}/{referralStatus}")]
         public ActionResult PatchReferral(string referralId, ReferralStatus referralStatus)
         {
-            this.referralsService.UpdateReferralStatus(referralId, referralStatus);
+            var success = this.referralsService.UpdateReferralStatus(referralId, referralStatus);
 
-            return Ok();
+            return success ? Ok() : BadRequest("Failed to update referral status.");
         }
 
         [HttpPost]
         [Route("InviteFriend/{userId}/{refereeFirstName}/{refereeLastName}")]
         public ActionResult InviteFriend(string userId, string refereeFirstName, string refereeLastName)
         {
-            var result = this.referralsService.InviteFriend(userId, refereeFirstName, refereeLastName);
+            var newReferralId = this.referralsService.InviteFriend(userId, refereeFirstName, refereeLastName);
 
-            return Ok(result);
+            if (string.IsNullOrWhiteSpace(newReferralId))
+            {
+                return BadRequest("Failed to invite friend.");
+            }
+
+            return Ok(newReferralId);
         }
     }
 }

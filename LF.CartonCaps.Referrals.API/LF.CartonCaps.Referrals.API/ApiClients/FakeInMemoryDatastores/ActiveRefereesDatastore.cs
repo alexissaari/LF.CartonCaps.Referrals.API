@@ -39,9 +39,14 @@ namespace LF.CartonCaps.Referrals.API.ApiClients.FakeInMemoryDatastores
 
         public static bool UpdateActiveReferral(string referralId, ReferralStatus referralStatus)
         {
-            if (activeReferees.TryGetValue(referralId, out ActiveReferral? activeReferral))
+            if (activeReferees.TryGetValue(referralId, out ActiveReferral? existingReferral))
             {
-                return activeReferees.TryUpdate(referralId, activeReferral, activeReferees[referralId]);
+                var newReferral = new ActiveReferral()
+                {
+                    ReferralStatus = referralStatus,
+                    OriginatingReferralUserId = existingReferral.OriginatingReferralUserId,
+                };
+                return activeReferees.TryUpdate(referralId, newReferral, existingReferral);
             }
 
             return false;

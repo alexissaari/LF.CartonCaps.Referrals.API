@@ -15,44 +15,55 @@ namespace LF.CartonCaps.Referrals.API.Proxies
      * One datastore will be used to store users and their referrals.
      * The second datastore will be used to store active referrals, i.e. Status = Sent or Pending, but not Compelete.
      */
-    public class CartonCapsApiClient : ICartonCapsApiClient 
+    public class CartonCapsApiClient : ICartonCapsApiClient
     {
-        public IList<Referral>? GetReferrals(string userId)
-        {
-            return UsersDatastore.GetUser(userId)?.Referrals;
-        }
-
         #region USER_REFERRALS
 
-        public Referral? GetReferral(string userId, string firstName, string lastName)
+        public IList<Referral>? GetReferrals(string userId)
         {
-            var user = UsersDatastore.GetUser(userId);
-            return user?.Referrals?.FirstOrDefault(x => x.FirstName == firstName && x.LastName == lastName);
+            return GetUser(userId).Referrals;
         }
 
-        public void AddReferee(string userId, Referral referral)
+        public bool AddRefereeToUser(string userId, Referral referral)
         {
-            var user = UsersDatastore.GetUser(userId);
-
-            if (user != null)
+            var user = GetUser(userId);
+            if (user.Referrals == null)
             {
-                user.Referrals?.Add(referral);
-                UsersDatastore.UpdateUser(userId, user);
+                user.Referrals = new List<Referral>();
             }
+
+            user.Referrals.Add(referral);
+            return UsersDatastore.UpdateUser(user);
         }
 
-        public void UpdateReferralStatus(string userId, string referralId, ReferralStatus referralStatus)
+        public bool UpdateReferralStatusForUser(string userId, string referralId, ReferralStatus referralStatus)
         {
-            var user = UsersDatastore.GetUser(userId);
+            var user = GetUser(userId);
             if (user != null)
             {
-                var referral = user?.Referrals?.FirstOrDefault(x => x.RefereeId == referralId);
+                var referral = GetReferral(user, referralId);
                 if (referral != null)
                 {
                     referral.ReferralStatus = referralStatus;
+                    return UsersDatastore.UpdateUser(user);
                 }
-                UsersDatastore.UpdateUser(userId, user);
             }
+            return false;
+        }
+
+        private User GetUser(string userId)
+        {
+            var user = UsersDatastore.GetUser(userId);
+            if (user == null)
+            {
+                throw new UserDoesNotExistException($"User Not Found. UserId = {userId}.", userId);
+            }
+            return user;
+        }
+
+        private Referral? GetReferral(User user, string referralId)
+        {
+            return user.Referrals?.FirstOrDefault(x => x.RefereeId == referralId);
         }
 
         #endregion USER_REFERRALS

@@ -24,7 +24,7 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
         }
 
         [Fact]
-        public void GetReferrals()
+        public void GetReferrals_ShouldReturnUserReferrals()
         {
             // Arrange
             var expected = new List<Referral>() { new Referral() { RefereeId = "asdf", FirstName = "adf", LastName = "asd" }};
@@ -43,7 +43,7 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
         }
 
         [Fact]
-        public void GetReferrals_None()
+        public void GetReferrals_ShouldNotReturnUserReferrals()
         {
             // Arrange
             IList<Referral> expected = null;
@@ -62,7 +62,7 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
         }
 
         [Fact]
-        public void GetReferrals_UserDoesNotExistException()
+        public void GetReferrals_ShouldThrowUserDoesNotExistException()
         {
             // Arrange
             this.referralsService
@@ -83,7 +83,7 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
         }
 
         [Fact]
-        public void PatchReferral()
+        public void PatchReferral_ShouldUpdateReferrals()
         {
             // Arrange
             this.referralsService.Setup(x => x.UpdateReferralStatus(someReferralId, ReferralStatus.Pending));
@@ -98,19 +98,35 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
         }
 
         [Fact]
-        public void PatchReferral_ReferralDoesNotExistException()
+        public void PatchReferral_ShouldNotUpdateReferrals()
+        {
+            // Arrange
+            this.referralsService.Setup(x => x.UpdateReferralStatus(someReferralId, ReferralStatus.Pending))
+                .Returns(false);
+
+            // Act
+            var response = this.referralsController.PatchReferral(someReferralId, ReferralStatus.Pending);
+            var result = response as Microsoft.AspNetCore.Mvc.OkResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(200, result.StatusCode);
+        }
+
+        [Fact]
+        public void PatchReferral_ShouldThrowActiveReferralDoesNotExistException()
         {
             // Arrange
             this.referralsService
                 .Setup(x => x.UpdateReferralStatus(someReferralId, ReferralStatus.Pending))
-                .Throws(new ReferralDoesNotExistException($"Referral Not Found. ReferralId = {someReferralId}.", someReferralId));
+                .Throws(new ActiveReferralDoesNotExistException($"Referral Not Found. ReferralId = {someReferralId}.", someReferralId));
 
             // Act
             try
             {
                 var response = this.referralsController.PatchReferral(someReferralId, ReferralStatus.Pending);
             }
-            catch (ReferralDoesNotExistException ex)
+            catch (ActiveReferralDoesNotExistException ex)
             {
                 // Assert
                 Assert.Equal(someReferralId, ex.ReferralId);
@@ -120,7 +136,7 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
         }
 
         [Fact]
-        public void InviteFriend()
+        public void InviteFriend_ShouldAddAFriend()
         {
             // Arrange
             var expected = someReferralId;
@@ -139,7 +155,26 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
         }
 
         [Fact]
-        public void InviteFriend_UserDoesNotExistException()
+        public void InviteFriend_ShouldNotAddAFriend()
+        {
+            // Arrange
+            var expected = someReferralId;
+            this.referralsService
+                .Setup(x => x.InviteFriend(someUserId, "Alexis", "Saari"))
+                .Returns(expected);
+
+            // Act
+            var response = this.referralsController.InviteFriend(someUserId, "Alexis", "Saari");
+            var result = response as Microsoft.AspNetCore.Mvc.OkObjectResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(200, result.StatusCode);
+            Assert.Equal(expected, result.Value);
+        }
+
+        [Fact]
+        public void InviteFriend_ShouldThrowUserDoesNotExistException()
         {
             // Arrange
             this.referralsService

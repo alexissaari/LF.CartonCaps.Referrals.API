@@ -23,31 +23,39 @@ namespace LF.CartonCaps.Referrals.API.Services
             return this.usersDatabaseClient.GetReferrals(userId);
         }
 
-        public void UpdateReferralStatus(string referralId, ReferralStatus referralStatus)
+        public bool UpdateReferralStatus(string referralId, ReferralStatus referralStatus)
         {
             var activeReferral = this.usersDatabaseClient.GetActiveReferral(referralId);
             if (activeReferral == null)
             {
-                throw new ReferralDoesNotExistException($"Referral Not Found. ReferralId = {referralId}.", referralId);
+                throw new ActiveReferralDoesNotExistException($"ActiveReferral not found. ReferralId = {referralId}.", referralId);
             }
+
+            bool updateOrRemoveActiveReferralIsSuccessful;
+            bool updatUserReferralIsSuccessful;
 
             // Update our internal store of active referees
             if (referralStatus == ReferralStatus.Complete)
             {
-                this.usersDatabaseClient.RemoveActiveReferral(referralId);
+                updateOrRemoveActiveReferralIsSuccessful = this.usersDatabaseClient.RemoveActiveReferral(referralId);
             }
             else
             {
-                this.usersDatabaseClient.UpdateActiveReferral(referralId, referralStatus);
+                updateOrRemoveActiveReferralIsSuccessful = this.usersDatabaseClient.UpdateActiveReferral(referralId, referralStatus);
             }
 
             // Update the user who referred this person
-            this.usersDatabaseClient.UpdateReferralStatus(activeReferral.OriginatingReferralUserId, referralId, referralStatus);
+            updatUserReferralIsSuccessful = this.usersDatabaseClient.UpdateReferralStatusForUser(activeReferral.OriginatingReferralUserId, referralId, referralStatus);
+
+            // If we have an issue updating the referral, but it's not due to the user or the referral not existing,
+            // let's fail gracefully and not throw an exception.
+            return updateOrRemoveActiveReferralIsSuccessful && updatUserReferralIsSuccessful;
         }
 
         public string InviteFriend(string userId, string firstName, string lastName)
         {
-            var referral = this.usersDatabaseClient.GetReferral(userId, firstName, lastName);
+            var referrals = this.usersDatabaseClient.GetReferrals(userId);
+            var referral = referrals?.FirstOrDefault(x => x.FirstName == firstName && x.LastName == lastName);
 
             // We have already referred this friend
             if (referral != null)
@@ -66,7 +74,7 @@ namespace LF.CartonCaps.Referrals.API.Services
             };
 
             // Add this friend to our user's list of referees
-            this.usersDatabaseClient.AddReferee(userId, newReferee);
+            this.usersDatabaseClient.AddRefereeToUser(userId, newReferee);
 
             // Add this referee to our collection of active referees
             var activeReferral = new ActiveReferral()

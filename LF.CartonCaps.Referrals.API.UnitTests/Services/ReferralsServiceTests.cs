@@ -1,4 +1,5 @@
-﻿using LF.CartonCaps.Referrals.API.Models.Abstractions;
+﻿using LF.CartonCaps.Referrals.API.Models;
+using LF.CartonCaps.Referrals.API.Models.Abstractions;
 using LF.CartonCaps.Referrals.API.Services;
 using Moq;
 
@@ -19,16 +20,60 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Services
         }
 
         [Fact]
-        public void GetReferrals()
+        public void GetReferrals_SHouldReturnUserReferrals()
         {
             // Arrange
-            
+            var expected = new List<Referral>
+            {
+                new Referral
+                {
+                    RefereeId = someReferralId,
+                    FirstName = "Jane",
+                    LastName = "Doe",
+                    ReferralStatus = ReferralStatus.Sent
+                }
+            };
+            this.usersDatabaseClientMock.Setup(x => x.GetReferrals(someUserId))
+                .Returns(expected);
 
             // Act
-            var response = this.service.GetReferrals(someUserId);
+            var actual = this.service.GetReferrals(someUserId);
 
             // Assert
-            Assert.NotNull(response);
+            Assert.NotNull(actual);
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void GetReferrals_ShouldNotReturnUserReferrals()
+        {
+            // Arrange
+            IList<Referral> expected = null;
+            this.usersDatabaseClientMock.Setup(x => x.GetReferrals(someUserId))
+                .Returns(expected);
+
+            // Act
+            var actual = this.service.GetReferrals(someUserId);
+
+            // Assert
+            Assert.Null(actual);
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void GetReferrals_Empty()
+        {
+            // Arrange
+            var expected = new List<Referral>();
+            this.usersDatabaseClientMock.Setup(x => x.GetReferrals(someUserId))
+                .Returns(expected);
+
+            // Act
+            var actual = this.service.GetReferrals(someUserId);
+
+            // Assert
+            Assert.NotNull(actual);
+            Assert.Equal(expected, actual);
         }
     }
 }
