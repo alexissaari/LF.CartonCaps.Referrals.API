@@ -2,6 +2,8 @@
 using LF.CartonCaps.Referrals.API.Models;
 using LF.CartonCaps.Referrals.API.Models.Abstractions;
 using LF.CartonCaps.Referrals.API.Models.Exceptions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -21,6 +23,9 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
             this.logger = new Mock<ILogger<ReferralsController>>();
             this.referralsService = new Mock<IReferralsService>();
             this.referralsController = new ReferralsController(this.logger.Object, this.referralsService.Object);
+            Mock<IUrlHelper> mockUrlHelper = new Mock<IUrlHelper>();
+            mockUrlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns("mocked-url");
+            this.referralsController.Url = mockUrlHelper.Object;
         }
 
         [Fact]
@@ -53,12 +58,11 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
 
             // Act
             var response = this.referralsController.GetReferrals(someUserId);
-            var result = response?.Result as Microsoft.AspNetCore.Mvc.OkObjectResult;
+            var result = response?.Result as Microsoft.AspNetCore.Mvc.NoContentResult;
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(200, result.StatusCode);
-            Assert.Null(result.Value);
+            Assert.Equal(204, result.StatusCode);
         }
 
         [Fact]
@@ -86,7 +90,8 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
         public void PatchReferral_ShouldUpdateReferrals()
         {
             // Arrange
-            this.referralsService.Setup(x => x.UpdateReferralStatus(someReferralId, ReferralStatus.Pending));
+            this.referralsService.Setup(x => x.UpdateReferralStatus(someReferralId, ReferralStatus.Pending))
+                .Returns(true);
 
             // Act
             var response = this.referralsController.PatchReferral(someReferralId, ReferralStatus.Pending);
@@ -106,11 +111,11 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
 
             // Act
             var response = this.referralsController.PatchReferral(someReferralId, ReferralStatus.Pending);
-            var result = response as Microsoft.AspNetCore.Mvc.OkResult;
+            var result = response as Microsoft.AspNetCore.Mvc.BadRequestObjectResult;
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(200, result.StatusCode);
+            Assert.Equal(400, result.StatusCode);
         }
 
         [Fact]
@@ -146,11 +151,11 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
 
             // Act
             var response = this.referralsController.InviteFriend(someUserId, "Alexis", "Saari");
-            var result = response as Microsoft.AspNetCore.Mvc.OkObjectResult;
+            var result = response as Microsoft.AspNetCore.Mvc.CreatedResult;
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(200, result.StatusCode);
+            Assert.Equal(201, result.StatusCode);
             Assert.Equal(expected, result.Value);
         }
 
@@ -160,17 +165,15 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
             // Arrange
             var expected = someReferralId;
             this.referralsService
-                .Setup(x => x.InviteFriend(someUserId, "Alexis", "Saari"))
-                .Returns(expected);
+                .Setup(x => x.InviteFriend(someUserId, "Alexis", "Saari"));
 
             // Act
             var response = this.referralsController.InviteFriend(someUserId, "Alexis", "Saari");
-            var result = response as Microsoft.AspNetCore.Mvc.OkObjectResult;
+            var result = response as Microsoft.AspNetCore.Mvc.BadRequestObjectResult;
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(200, result.StatusCode);
-            Assert.Equal(expected, result.Value);
+            Assert.Equal(400, result.StatusCode);
         }
 
         [Fact]
