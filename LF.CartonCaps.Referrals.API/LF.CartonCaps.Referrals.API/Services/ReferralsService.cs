@@ -21,6 +21,12 @@ namespace LF.CartonCaps.Referrals.API.Services
             return this.usersDatabaseClient.GetReferrals(userId);
         }
 
+        public bool IsReferral(string referralId)
+        {
+            var activeReferral = this.usersDatabaseClient.GetActiveReferral(referralId);
+            return activeReferral != null;
+        }
+
         public bool UpdateReferralStatus(string referralId, ReferralStatus referralStatus)
         {
             var activeReferral = this.usersDatabaseClient.GetActiveReferral(referralId);

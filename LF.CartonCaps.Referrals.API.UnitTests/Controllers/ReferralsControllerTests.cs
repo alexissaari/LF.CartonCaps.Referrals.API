@@ -90,6 +90,21 @@ namespace LF.CartonCaps.Referrals.API.UnitTests.Controllers
         }
 
         [Fact]
+        public void IsReferee()
+        {
+            // Arrange
+            this.referralsService.Setup(x => x.IsReferral(It.IsAny<string>()))
+                .Returns(true);
+
+            // Act
+            var response = this.referralsController.GetIsReferral(someReferralId);
+            var result = response as Microsoft.AspNetCore.Mvc.OkResult;
+
+            // Assert
+            Assert.NotNull(response);
+        }
+
+        [Fact]
         public void PatchReferral_ShouldUpdateReferrals()
         {
             // Arrange
