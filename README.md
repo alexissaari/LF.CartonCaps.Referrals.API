@@ -1,11 +1,12 @@
 # LF.CartonCaps.Referrals.API
-LiveFront's Code Challenge - Carton Caps Referrals API
-
 This .NET8.0 REST Api handles the Referrals side of the Carton Caps App.
 
+### Client Connection for Fake Datastores
+Ideally, this REST Api would connect to LF.CartonCaps.Api for connecting to our Carton Caps Database. However this example REST Api instead uses two fake datastores for Users and ActiveReferrals. The ActiveReferrals collection provides easier lookup and allows a referee's status to be updated without knowing the userId of who referred them.
+
 ### App Integration
-When a User of Carton Caps clicks on the Invite Friends page, the app calls this REST Api's `GET GetReferrals/{userId}` route, 
-which returns all Referrals the User has made, including first and last names and referral status (Sent, Pending, or Complete).
+When a User of Carton Caps clicks on the `Invite Friends` page, the app calls this REST Api's `GET GetReferrals/{userId}` route, 
+which returns all the Referrals the User has made, including first and last names and referral status (Sent, Pending, or Complete).
 
 Users can invite their friends to join Carton Caps by clicking `Share`. The app first calls this REST Api's `POST InviteFriend/{userId}/{referralFirstName}/{referralLastName}` route to create a new Referral on both the User.Referrals list and the ActiveReferrals collection, with a status of Sent. The response is the newly created Referral's ReferralId. The app utilizes a 3rd party deep link service to create a deep link using the ReferralId and the User's ShareableReferralCode, which is already stored within the app.
 
