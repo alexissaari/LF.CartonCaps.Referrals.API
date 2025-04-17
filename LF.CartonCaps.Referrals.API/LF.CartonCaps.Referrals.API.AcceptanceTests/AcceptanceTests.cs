@@ -22,7 +22,7 @@ namespace LF.CartonCaps.Referrals.API.AcceptanceTests
         }
 
         [Fact]
-        public async void AddUpdateDeleteReferral()
+        public async void GetAddUpdateDeleteReferral()
         {
             // Get existing referrals for a user
             var existingReferrals = await Helper.GetReferralsReadAndDeserialize(client, userIdWithReferrals);
@@ -79,6 +79,34 @@ namespace LF.CartonCaps.Referrals.API.AcceptanceTests
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
             var contentString = await response.Content.ReadAsStringAsync();
             Assert.Contains("User Not Found. UserId = 12345.", contentString);
+        }
+
+        [Fact]
+        public async void PatchReferralForReferralsThatDoesNotExist()
+        {
+            // Act
+            var referralIdThatDoesNotExist = Guid.NewGuid().ToString();
+            var patchRoute = $"ReferralStatus/{referralIdThatDoesNotExist}/{ReferralStatus.Pending}";
+
+            // Assert
+            var response = await client.PatchAsync(baseUri + patchRoute, null);
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+            var contentString = await response.Content.ReadAsStringAsync();
+            Assert.Contains($"ActiveReferral not found. ReferralId = {referralIdThatDoesNotExist}.", contentString);
+        }
+
+        [Fact]
+        public async void InviteFriendForUserThatDoesNotExist()
+        {
+            // Act
+            var userId = Guid.NewGuid().ToString(); 
+            var addRoute = $"InviteFriend/{userId}/Alexis/Saari";
+            var response = await client.PostAsync(baseUri + addRoute, null);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+            var contentString = await response.Content.ReadAsStringAsync();
+            Assert.Contains($"User Not Found. UserId = {userId}.", contentString);
         }
     }
 }
