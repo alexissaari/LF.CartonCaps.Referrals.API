@@ -19,6 +19,7 @@ namespace LF.CartonCaps.Referrals.API.Controllers
 
         [HttpGet]
         [Route("{userId}")]
+        [EndpointSummary("Get all the Referrals this User has sent to other people.")]
         public ActionResult<List<Referral>> GetReferrals(string userId)
         {
             var result = this.referralsService.GetReferrals(userId);
@@ -33,6 +34,7 @@ namespace LF.CartonCaps.Referrals.API.Controllers
 
         [HttpPatch]
         [Route("ReferralStatus/{referralId}/{referralStatus}")]
+        [EndpointSummary("Update Referral's ReferralStatus.")]
         public ActionResult PatchReferral(string referralId, ReferralStatus referralStatus)
         {
             var success = this.referralsService.UpdateReferralStatus(referralId, referralStatus);
@@ -42,13 +44,14 @@ namespace LF.CartonCaps.Referrals.API.Controllers
 
         [HttpPost]
         [Route("InviteFriend/{userId}/{referralFirstName}/{referralLastName}")]
+        [EndpointSummary("Refer a friend to join CartonCaps! A User's Referrals are unique by FirstName and LastName.")]
         public ActionResult InviteFriend(string userId, string referralFirstName, string referralLastName)
         {
             var newReferralId = this.referralsService.InviteFriend(userId, referralFirstName, referralLastName);
 
             if (string.IsNullOrWhiteSpace(newReferralId))
             {
-                return BadRequest($"Failed to invite friend {referralFirstName} {referralLastName} to user {userId}");
+                return BadRequest($"Failed to invite friend {referralFirstName} {referralLastName} to user {userId}.");
             }
 
             var uri = Url.Action(nameof(GetReferrals), new { userId = userId });
