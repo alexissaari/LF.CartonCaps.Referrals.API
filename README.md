@@ -19,6 +19,12 @@ When a referee clicks the deep link, the deep link service is able to notify the
 > If successful, returns `200 OK` with a list of all the User's Referrals <br>
 > If User.Referrals is null or empty, returns `204 NoContent` <br>
 > If User does not exist, throws `UserDoesNotExistException` <br>
+
+> ```http 
+> GET /IsReferral/{userId}
+> ```
+> If successful, returns `200 OK` with a boolean value for if the person has been refereed <br>
+> Note: If ActiveReferral does not exist for this person, return false instead of throwing an exception
  
 > ```http 
 > PATCH /Referrals/ReferralStatus/{referralId}/{referralStatus}
@@ -38,4 +44,7 @@ When a referee clicks the deep link, the deep link service is able to notify the
 > If ActiveReferral does not exist, throws `ActiveReferralDoesNotExistException` <br>
 > If Referral does not exist on User, throws `ReferralDoesNotExistOnUserException`
 
+### Personal Notes
+I'll be honest, I didn't know how deep links worked before starting this project and most of what I loosely understand, I've learned from this webpage, [AppsFlyer Deep Linking For Developers](https://www.appsflyer.com/resources/guides/deep-linking-for-developers/). My understanding is a deep linking service would be integrated with the app code and not this underlying REST Api, which is why there's no routes supporting deep linking.
 
+I've put in a basic happy path explaination in the [App Integration](https://github.com/alexissaari/LF.CartonCaps.Referrals.API?tab=readme-ov-file#app-integration) section above. Outside of this, I've done my best to add comments to the tops of files when I think a further explaination of my thought process is needed or would be helpful.
