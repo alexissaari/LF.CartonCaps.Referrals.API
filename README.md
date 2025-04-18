@@ -2,7 +2,7 @@
 This .NET8.0 REST Api handles the Referrals side of the Carton Caps App.
 
 ### Client Connection for Fake Datastores
-Ideally, this REST Api would connect to LF.CartonCaps.Api for connecting to our Carton Caps Database. However this example REST Api instead uses two fake datastores for Users and ActiveReferrals. The ActiveReferrals collection provides easier lookup and allows a referee's status to be updated without knowing the userId of who referred them.
+Ideally, this REST Api would connect to LF.CartonCaps.Api for connecting to our Carton Caps Database. However, this example REST Api instead uses two fake datastores for Users and ActiveReferrals. The ActiveReferrals collection provides easier lookup and allows a referee's status to be updated without knowing the userId of who referred them.
 
 ### App Integration
 When a User of Carton Caps clicks on the `Invite Friends` page, the app calls this REST Api's `GET GetReferrals/{userId}` route, 
