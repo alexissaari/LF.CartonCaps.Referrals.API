@@ -47,10 +47,10 @@ Once the app loads for the referee, the app is able to determine if they are a r
 > If Referral does not exist on User, throws `ReferralDoesNotExistOnUserException`
 
 ### Personal Notes
-I'll be honest, I didn't know how deep links worked before starting this project. Most of what I now loosely understand I've learned from this webpage: [AppsFlyer - Deep Linking For Developers](https://www.appsflyer.com/resources/guides/deep-linking-for-developers/). My understanding is a deep linking service would be integrated directly into the app's codebase and not this underlying REST Api, which is why there's no routes supporting deep linking.
+I'll be honest, I didn't know how deep links worked before starting this project. Most of what I now loosely understand, I've learned from this webpage: [AppsFlyer - Deep Linking For Developers](https://www.appsflyer.com/resources/guides/deep-linking-for-developers/). My understanding is a deep linking service would be integrated directly into the app's codebase and not this underlying REST Api, which is why there's no routes supporting deep linking.
 
 I've put in a basic happy path explaination in the [App Integration](https://github.com/alexissaari/LF.CartonCaps.Referrals.API?tab=readme-ov-file#app-integration) section above. Outside of this, I've done my best to add comments to the tops of files when I think a further explaination of my thought process is needed or would be helpful.
 
 #### Extras: <br>
-All code changes (non-README) were commited from branches and not directly against main. <br>
-I was able to run Acceptance Tests by running two instances of Visual Studio, one running the service itself and the other running the Acceptance Tests that call the service's localhost. <br>
+All code changes (non-README) were commited from branches through pull requests and not directly against main. <br>
+I was able to run Acceptance Tests by running two instances of Visual Studio, one running the service itself and the other running the Acceptance Tests that call the running service's localhost. <br>
