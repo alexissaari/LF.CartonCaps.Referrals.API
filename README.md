@@ -5,8 +5,7 @@ This .NET8.0 REST Api handles the Referrals side of the Carton Caps Mobile App.
 Ideally, this REST Api would connect to LF.CartonCaps.Api for connecting to our Carton Caps Database. However, this example REST Api instead uses two fake datastores for Users and ActiveReferrals. The ActiveReferrals collection provides easier lookup and allows a referee's status to be updated without knowing the UserId of who referred them.
 
 ### System Diagram
-![LF CartionCaps Referrals System Diagram](https://github.com/user-attachments/assets/acca4c6c-111e-47e7-b602-341e1bf05a28)
-
+![LF CartionCaps Referrals System Diagram drawio](https://github.com/user-attachments/assets/d340919e-3613-4ce2-9c28-8cd806732c03)
 
 ### Endpoints
 > ```http 
